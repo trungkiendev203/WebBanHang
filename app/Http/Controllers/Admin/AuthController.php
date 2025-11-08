@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User; // ✅ thêm dòng này
+use App\Models\User; 
 
 class AuthController extends Controller
 {

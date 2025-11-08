@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('admin/css/dashboard.css') }}">
+
   <style>
     :root {
       --primary-color: #667eea;
@@ -438,24 +440,30 @@
         <a href="#">
           <i class="fas fa-box-open"></i>
           <span class="menu-text">Sản phẩm</span>
-          <span class="menu-badge">{{ $products->count() ?? 0 }}</span>
+<span class="menu-badge">{{ $productCount ?? \App\Models\Product::count() }}</span>
+
+
         </a>
-        <a href="#">
+        <a href="{{ route('admin.category.index') }}">
           <i class="fas fa-layer-group"></i>
           <span class="menu-text">Loại sản phẩm</span>
         </a>
-        <a href="#">
+        <a href="{{ route('admin.label.index') }}">
           <i class="fas fa-tags"></i>
           <span class="menu-text">Hiệu sản phẩm</span>
         </a>
-        <a href="#">
+        <a href="{{ route('admin.product.index') }}">
           <i class="fas fa-palette"></i>
-          <span class="menu-text">Màu sản phẩm</span>
+          <span class="menu-text">Sản phẩm</span>
         </a>
       </div>
 
       <div class="menu-section">
         <div class="menu-section-title">Bán hàng</div>
+        <a href="{{ route('admin.order.create') }}">
+          <i class="fas fa-plus-circle"></i>
+          <span class="menu-text">Thêm mới</span>
+        </a>
         <a href="#">
           <i class="fas fa-file-invoice"></i>
           <span class="menu-text">Đơn hàng</span>
@@ -463,10 +471,6 @@
         <a href="#">
           <i class="fas fa-receipt"></i>
           <span class="menu-text">Đặt hàng</span>
-        </a>
-        <a href="#">
-          <i class="fas fa-truck"></i>
-          <span class="menu-text">Giao hàng</span>
         </a>
         <a href="#">
           <i class="fas fa-file-invoice-dollar"></i>
