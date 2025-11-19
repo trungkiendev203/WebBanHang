@@ -464,15 +464,11 @@
           <i class="fas fa-plus-circle"></i>
           <span class="menu-text">Thêm mới</span>
         </a>
-        <a href="#">
-          <i class="fas fa-file-invoice"></i>
-          <span class="menu-text">Đơn hàng</span>
-        </a>
-        <a href="#">
+        <a href="{{ route('admin.order.index') }}">
           <i class="fas fa-receipt"></i>
           <span class="menu-text">Đặt hàng</span>
         </a>
-        <a href="#">
+        <a href="{{ route('admin.bill.index') }}">
           <i class="fas fa-file-invoice-dollar"></i>
           <span class="menu-text">Hóa đơn</span>
         </a>

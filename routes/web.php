@@ -45,7 +45,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
 use App\Http\Controllers\Admin\OrderController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/order', [OrderController::class, 'index'])->name('order.index');
+    Route::get('/order/{id}', [OrderController::class, 'show'])->name('order.show');
     Route::get('/order/create', [OrderController::class, 'create'])->name('order.create');
     Route::post('/order/store', [OrderController::class, 'store'])->name('order.store');
+     Route::put('/order/update-status/{id}', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
 });
+
+use App\Http\Controllers\Admin\BillController;
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/bill', [BillController::class, 'index'])->name('bill.index');
+    Route::put('/bill/update/{id}', [BillController::class, 'update'])->name('bill.update');
+    Route::get('/bill/{id}', [BillController::class, 'show'])->name('bill.show');
+});
+use App\Http\Controllers\Client\HomeController;
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/search', [HomeController::class, 'search'])->name('client.search');
+
 

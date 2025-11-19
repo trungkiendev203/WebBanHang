@@ -11,6 +11,11 @@ use App\Models\Product;
 
 class OrderController extends Controller
 {
+    public function index()
+    {
+        $orders = Order::orderBy('id_order', 'DESC')->get();
+        return view('admin.order.index', compact('orders'));
+    }
     // ==========================
     // ➕ FORM THÊM MỚI HÓA ĐƠN
     // ==========================
@@ -84,4 +89,56 @@ class OrderController extends Controller
             return back()->with('error', 'Lỗi: '.$e->getMessage());
         }
     }
+    public function destroy($id)
+    {
+        $order = Order::find($id);
+        if (!$order) {
+            return back()->with('error', 'Hóa đơn không tồn tại!');
+        }
+
+        // Xóa chi tiết hóa đơn trước
+        OrderDetail::where('id_order', $id)->delete();
+        // Xóa hóa đơn
+        $order->delete();
+
+        return back()->with('success', 'Xóa hóa đơn thành công!');
+    }
+    public function show($id)
+    {
+        $order = Order::find($id);
+        if (!$order) {
+            return back()->with('error', 'Hóa đơn không tồn tại!');
+        }
+
+        $orderDetails = OrderDetail::where('id_order', $id)
+            ->with('product')
+            ->get();
+
+        return view('admin.order.show', compact('order', 'orderDetails'));
+    }
+public function updateStatus(Request $request, $id)
+{
+    $order = Order::findOrFail($id);
+    $order->status_order = $request->status_order;
+    $order->save();
+
+    // Khi đơn hàng được xác nhận (status_order = 1)
+    if ($order->status_order == 1) {
+        // Kiểm tra nếu chưa có hóa đơn thì tạo mới
+        if (!\App\Models\Bill::where('id_order', $order->id_order)->exists()) {
+            \App\Models\Bill::create([
+                'code_bill' => 'BILL' . rand(1000,9999),
+                'id_order' => $order->id_order,
+                'payment_method' => 'COD',
+                'status_bill' => 0, // 0 = chưa thanh toán
+                'total_amount' => $order->total_amount,
+            ]);
+        }
+    }
+
+    return back()->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
+}
+
+
+
 }

@@ -19,4 +19,14 @@ class Order extends Model
     {
         return $this->hasMany(OrderDetail::class, 'id_order', 'id_order');
     }
+    public function bill()
+    {
+        return $this->hasOne(Bill::class, 'id_order', 'id_order');
+    }
+    public function orderDetails()
+{
+    return $this->hasMany(\App\Models\OrderDetail::class, 'id_order', 'id_order');
+}
+
+    
 }
