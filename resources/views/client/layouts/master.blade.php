@@ -359,11 +359,11 @@
                             <span class="sale-badge">SALE</span>
                         </a>
                     </li>
-                    <li><a href="#">ĐẦM</a></li>
-                    <li><a href="#">ÁO</a></li>
-                    <li><a href="#">QUẦN</a></li>
-                    <li><a href="#">CHÂN VÁY</a></li>
-                    <li><a href="#">ÁO KHOÁC</a></li>
+                    <li><a href="{{ route('client.category', 'dam-cong-so') }}">ĐẦM</a></li>
+                    <li><a href="{{ route('client.category', 'ao') }}">ÁO</a></li>
+                    <li><a href="{{ route('client.category', 'quan') }}">QUẦN</a></li>
+                    <li><a href="{{ route('client.category', 'chan-vay') }}">CHÂN VÁY</a></li>
+                    <li><a href="{{ route('client.category', 'ao-khoac') }}">ÁO KHOÁC</a></li>
                     <li><a href="#">LOOKBOOK</a></li>
                     <li><a href="#">BST MỚI</a></li>
                 </ul>

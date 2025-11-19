@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Label;
 use App\Models\ProductImage;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -35,72 +36,89 @@ class ProductController extends Controller
         return view('admin.product.create', compact('categories', 'labels'));
     }
 
-    // Xử lý thêm mới
-    public function store(Request $request)
-    {
-        
+public function store(Request $request)
+{
+    // ================================
+    // 🔹 1. VALIDATE DỮ LIỆU
+    // ================================
+    $validated = $request->validate([
+        'name_product' => 'required|string|max:255',
+        'price_product' => 'required|integer|min:0',
+        'saleprice_product' => 'nullable|integer|min:0',
+        'import_price' => 'nullable|integer|min:0',
+        'describe_product' => 'nullable|string',
+        'size_product' => 'nullable|string',
+        'quantity' => 'nullable|integer|min:0',
+        'status_product' => 'nullable|string|max:1',
+        'id_category' => 'nullable|integer',
+        'id_label' => 'nullable|integer',
+        'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10048',
+    ]);
 
-        $validated = $request->validate([
-            'name_product' => 'required|string|max:255',
-            'price_product' => 'required|integer|min:0',
-            'saleprice_product' => 'nullable|integer|min:0',
-            'import_price' => 'nullable|integer|min:0',
-            'describe_product' => 'nullable|string',
-            'size_product' => 'nullable|string',
-            'quantity' => 'nullable|integer|min:0',
-            'status_product' => 'nullable|string|max:1',
-            'id_category' => 'nullable|integer',
-            'id_label' => 'nullable|integer',
-            'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10048',
-        ]);
+    // ================================
+    // 🔹 2. SINH CODE SẢN PHẨM TỰ ĐỘNG
+    // ================================
+    $code = $request->input('code_product') ?: 'SP' . rand(1000, 9999);
 
-        // Sinh code tự động nếu chưa nhập
-        $code = $request->input('code_product') ?: 'SP' . rand(1000, 9999);
+    // ================================
+    // 🔹 3. TẠO SLUG SẢN PHẨM
+    // ================================
+    $slug = Str::slug($request->name_product) . '-' . time();
 
-        // Lưu sản phẩm chính
-        $product = Product::create([
-            'code_product' => $code,
-            'name_product' => $request->name_product,
-            'price_product' => $request->price_product,
-            'saleprice_product' => $request->saleprice_product ?? 0,
-            'import_price' => $request->import_price ?? 0,
-            'describe_product' => $request->describe_product,
-            'size_product' => $request->size_product,
-            'quantity' => $request->quantity ?? 0,
-            'view_product' => 0,
-            'status_product' => $request->status_product ?? '1',
-            'id_category' => $request->id_category,
-            'id_label' => $request->id_label,
-        ]);
+    // ================================
+    // 🔹 4. LƯU SẢN PHẨM VÀO DATABASE
+    // ================================
+    $product = Product::create([
+        'code_product'      => $code,
+        'name_product'      => $request->name_product,
+        'slug_product'      => $slug,
+        'price_product'     => $request->price_product,
+        'saleprice_product' => $request->saleprice_product ?? 0,
+        'import_price'      => $request->import_price ?? 0,
+        'describe_product'  => $request->describe_product,
+        'size_product'      => $request->size_product,
+        'quantity'          => $request->quantity ?? 0,
+        'view_product'      => 0,
+        'status_product'    => $request->status_product ?? '1',
+        'id_category'       => $request->id_category,
+        'id_label'          => $request->id_label,
+    ]);
 
-        // Upload nhiều ảnh
-if ($request->hasFile('images')) {
-    $firstImage = null;
+    // ================================
+    // 🔹 5. UPLOAD ẢNH (NHIỀU ẢNH)
+    // ================================
+    if ($request->hasFile('images')) {
+        $firstImage = null;
 
-    foreach ($request->file('images') as $index => $file) {
-        $name = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path('uploads/product'), $name);
+        foreach ($request->file('images') as $index => $file) {
+            $name = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/product'), $name);
 
-        ProductImage::create([
-            'id_product' => $product->id_product,
-            'image_url' => $name,
-            'created_at' => now(),
-        ]);
+            ProductImage::create([
+                'id_product' => $product->id_product,
+                'image_url'  => $name,
+                'created_at' => now(),
+            ]);
 
-        if ($index === 0) {
-            $firstImage = $name; // lưu ảnh đầu tiên
+            // Lấy ảnh đầu tiên làm ảnh chính
+            if ($index === 0) {
+                $firstImage = $name;
+            }
+        }
+
+        // Cập nhật ảnh chính vào bảng sản phẩm
+        if ($firstImage) {
+            $product->update(['image' => $firstImage]);
         }
     }
 
-    // Cập nhật cột image trong tb_product
-    if ($firstImage) {
-        $product->update(['image' => $firstImage]);
-    }
+    // ================================
+    // 🔹 6. TRẢ VỀ
+    // ================================
+    return redirect()->route('admin.product.index')
+        ->with('success', 'Thêm sản phẩm thành công!');
 }
 
-
-        return redirect()->route('admin.product.index')->with('success', 'Thêm sản phẩm thành công!');
-    }
 
     // Form chỉnh sửa
     public function edit($id)

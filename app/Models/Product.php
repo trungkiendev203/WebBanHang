@@ -28,6 +28,7 @@ class Product extends Model
     'status_product',
     'id_category',
     'id_label',
+    'slug_product',
 ];
 
 

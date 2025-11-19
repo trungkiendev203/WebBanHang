@@ -58,7 +58,7 @@
             <div class="category-row">
                 <!-- ĐẦM -->
                 <div class="category-item">
-                    <a href="#" class="category-link">
+                    <a href="{{ route('client.category', 'dam-cong-so') }}" class="category-link">
                         <div class="category-circle">
                             <img src="{{ asset('uploads/categories/dam.png') }}" alt="Đầm">
                         </div>
@@ -68,7 +68,7 @@
                 
                 <!-- ÁO -->
                 <div class="category-item">
-                    <a href="#" class="category-link">
+                    <a href="{{ route('client.category', 'ao') }}" class="category-link">
                         <div class="category-circle">
                             <img src="{{ asset('uploads/categories/ao.png') }}" alt="Áo">
                         </div>
@@ -78,7 +78,7 @@
                 
                 <!-- QUẦN -->
                 <div class="category-item">
-                    <a href="#" class="category-link">
+                    <a href="{{ route('client.category', 'quan') }}" class="category-link">
                         <div class="category-circle">
                             <img src="{{ asset('uploads/categories/quan.png') }}" alt="Quần">
                         </div>
@@ -88,7 +88,7 @@
                 
                 <!-- CHÂN VÁY -->
                 <div class="category-item">
-                    <a href="#" class="category-link">
+                    <a href="{{ route('client.category', 'chan-vay') }}" class="category-link">
                         <div class="category-circle">
                             <img src="{{ asset('uploads/categories/chan_vay.png') }}" alt="Chân váy">
                         </div>
@@ -98,7 +98,7 @@
                 
                 <!-- ÁO KHOÁC -->
                 <div class="category-item">
-                    <a href="#" class="category-link">
+                    <a href="{{ route('client.category', 'ao-khoac') }}" class="category-link">
                         <div class="category-circle">
                             <img src="{{ asset('uploads/categories/ao_khoac.png') }}" alt="Áo khoác">
                         </div>
@@ -108,7 +108,7 @@
                 
                 <!-- SALE -->
                 <div class="category-item">
-                    <a href="#" class="category-link">
+                    <a href="{{ route('client.sale') }}" class="category-link">
                         <div class="category-circle">
                             <img src="{{ asset('uploads/categories/sale.png') }}" alt="Sale">
                         </div>
