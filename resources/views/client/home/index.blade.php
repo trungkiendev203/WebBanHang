@@ -98,7 +98,7 @@
                 
                 <!-- ÁO KHOÁC -->
                 <div class="category-item">
-                    <a href="{{ route('client.category', 'ao-khoac') }}" class="category-link">
+                    <a href="{{ route('client.category', 'ao-khoac-cong-so') }}" class="category-link">
                         <div class="category-circle">
                             <img src="{{ asset('uploads/categories/ao_khoac.png') }}" alt="Áo khoác">
                         </div>

@@ -94,42 +94,61 @@
                         </button>
                     </div>
 
-                    {{-- Dòng sản phẩm --}}
-                    <div class="filter-section">
-                        <div class="filter-section-header" data-toggle="collapse">
-                            <h6>Dòng sản phẩm</h6>
-                            <i class="bi bi-chevron-down"></i>
-                        </div>
-                        <div class="filter-section-content">
-                            <label class="filter-checkbox" onclick="window.location='{{ route('client.category', 'dam-cong-so') }}'">
-                                <input type="checkbox" name="product-line">
-                                <span class="checkmark"></span>
-                                <span class="label-text">Đầm</span>
-                                <span class="count">({{ $countProducts }})</span>
-                            </label>
-                            <label class="filter-checkbox" onclick="window.location='{{ route('client.category', 'ao') }}'">
-                                <input type="checkbox" name="product-line" checked>
-                                <span class="checkmark"></span>
-                                <span class="label-text">Áo</span>
-                                <span class="count">(1{{ $countProducts }})</span>
-                            </label>
-                            <label class="filter-checkbox" onclick="window.location='{{ route('client.category', 'quan') }}'">
-                                <input type="checkbox" name="product-line">
-                                <span class="checkmark"></span>
-                                <span class="label-text">Quần</span>
-                                <span class="count">({{ $countProducts }})</span>
-                            </label>
-<label class="filter-checkbox" onclick="window.location='{{ route('client.category', 'chan-vay') }}'">
-    <input type="checkbox" name="product-line">
-    <span class="checkmark"></span>
-    <span class="label-text">Chân Váy</span>
-    <span class="count">({{ $countProducts }})</span>
+{{-- Dòng sản phẩm --}}
+<div class="filter-section">
+    <div class="filter-section-header" data-toggle="collapse">
+        <h6>Dòng sản phẩm</h6>
+        <i class="bi bi-chevron-down"></i>
+    </div>
 
+    <div class="filter-section-content">
+
+        {{-- Đầm --}}
+        <label class="filter-checkbox" onclick="window.location='{{ route('client.category', 'dam-cong-so') }}'">
+            <input type="checkbox" name="product-line"
+                {{ $category->slug_category == 'dam-cong-so' ? 'checked' : '' }}>
+            <span class="checkmark"></span>
+            <span class="label-text">Đầm</span>
+           <span class="count">({{ $counts['dam-cong-so'] }})</span>
+
+        </label>
+
+        {{-- Áo --}}
+    <label class="filter-checkbox" onclick="window.location='{{ route('client.category', 'ao') }}'">
+    <input type="checkbox" name="product-line"
+        {{ $category->slug_category == 'ao' || $category->slug_category == 'ao-khoac-cong-so' ? 'checked' : '' }}>
+    <span class="checkmark"></span>
+    <span class="label-text">Áo</span>
+
+    {{-- Gộp số lượng 2 danh mục --}}
+    <span class="count">({{ 
+        ($counts['ao'] ?? 0) + 
+        ($counts['ao-khoac-cong-so'] ?? 0) 
+    }})</span>
 </label>
 
 
-                        </div>
-                    </div>
+        {{-- Quần --}}
+        <label class="filter-checkbox" onclick="window.location='{{ route('client.category', 'quan') }}'">
+            <input type="checkbox" name="product-line"
+                {{ $category->slug_category == 'quan' ? 'checked' : '' }}>
+            <span class="checkmark"></span>
+            <span class="label-text">Quần</span>
+            <span class="count">({{ $counts['quan'] }})</span>
+        </label>
+
+        {{-- Chân Váy --}}
+        <label class="filter-checkbox" onclick="window.location='{{ route('client.category', 'chan-vay') }}'">
+            <input type="checkbox" name="product-line"
+                {{ $category->slug_category == 'chan-vay' ? 'checked' : '' }}>
+            <span class="checkmark"></span>
+            <span class="label-text">Chân Váy</span>
+            <span class="count">({{ $counts['chan-vay'] }})</span>
+        </label>
+
+    </div>
+</div>
+
                     {{-- Giá --}}
                     <div class="filter-section">
                         <div class="filter-section-header" data-toggle="collapse">

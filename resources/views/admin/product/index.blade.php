@@ -17,33 +17,34 @@
         </form>
 
         <table class="table table-bordered table-striped align-middle">
-            <thead>
-                <tr class="text-center">
-                    <th>Mã sp</th>
-                    <th>Tên sp</th>
-                    <th>Size</th>
-                    <th>Số lượng</th>
-                    <th>Loại sp</th>
-                    <th>Hiệu sp</th>
-                    <th>Hình ảnh</th>
-                    <th>Giá nhập</th>
-                    <th>Giá gốc</th>
-                    <th>Giá bán</th>
-                    <th>Mô tả</th>
-                   
-                    <th>Ngày thêm</th>
-                    <th>Trạng thái</th>
-                    <th>Sửa</th>
-                    <th>Xóa</th>
-                </tr>
-            </thead>
+<thead>
+    <tr class="text-center">
+        <th>Mã sp</th>
+        <th>Tên sp</th>
+        <th>Size</th>
+
+        <th>Danh mục</th>
+        <th>Nhãn</th>
+
+        <th>Hình ảnh</th>
+        <th>Giá nhập</th>
+        <th>Giá gốc</th>
+        <th>Giá bán</th>
+        <th>Mô tả</th>
+        <th>Ngày thêm</th>
+        <th>Trạng thái</th>
+        <th>Sửa</th>
+        <th>Xóa</th>
+    </tr>
+</thead>
+    
             <tbody>
                 @foreach($products as $item)
                 <tr>
                     <td>{{ $item->code_product }}</td>
                     <td>{{ $item->name_product }}</td>
                     <td>{{ $item->size_product }}</td>
-                    <td>{{ $item->quantity_product }}</td>
+                   
                     <td>{{ $item->category->name_category ?? '—' }}</td>
                     <td>{{ $item->label->name_label ?? '—' }}</td>
 <td>
