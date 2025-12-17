@@ -16,7 +16,7 @@
 
     {{-- CSS custom --}}
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-
+@stack('styles')
     <style>
         * {
             margin: 0;

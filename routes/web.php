@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\BillController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\CategoryController as ClientCategoryController;   // ⭐ KHÔNG TRÙNG
+use App\Http\Controllers\Client\ProductController as ClientProductController;   // ⭐ KHÔNG TRÙNG
 Route::get('/admin/login', [AuthController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.post');
 Route::get('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
@@ -47,4 +48,6 @@ Route::get('/danh-muc/{slug}', [ClientCategoryController::class, 'show'])
     Route::get('/san-pham/{slug}', [ProductController::class, 'detail'])
     ->name('product.detail');
 Route::get('/sale', [ClientCategoryController::class, 'sale'])->name('client.sale');
+Route::get('/san-pham/{slug}', [ClientProductController::class, 'show'])
+    ->name('product.show');
 

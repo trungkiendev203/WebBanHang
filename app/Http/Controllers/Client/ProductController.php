@@ -13,5 +13,10 @@ class ProductController extends Controller
 
         return view('client.product.detail', compact('product'));
     }
-    
+    public function show($id)
+    {
+       $product = Product::Where('slug_product', $id)->firstOrFail();
+
+        return view('client.product.show', compact('product'));
+    }
 }

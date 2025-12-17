@@ -210,13 +210,14 @@
             <i class="bi bi-heart"></i>
         </button>
         <button class="btn-action" title="Xem nhanh">
-            <i class="bi bi-eye"></i>
+           <a href="{{ route('product.show', ['slug' => $product->slug_product]) }}"><i class="bi bi-eye"></i></a>
         </button>
     </div>
 
 </div>
 
                     {{-- THÔNG TIN SẢN PHẨM --}}
+                    
                     <div class="product-info">
                         <h5 class="product-name">
                             {{ $product->name_product }}
