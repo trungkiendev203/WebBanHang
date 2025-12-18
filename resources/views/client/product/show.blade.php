@@ -458,6 +458,12 @@
         font-weight: 700;
         line-height: 1;
     }
+    .size-option.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+    text-decoration: line-through;
+}
+
 
     .rating-stars {
         color: #ffc107;
@@ -638,7 +644,6 @@
     }
 </style>
 @endpush
-
 @section('content')
 <!-- Breadcrumb -->
 <div class="breadcrumb-section">
@@ -684,7 +689,7 @@
             </div>
 
             <div class="price-section">
-                <span class="current-price">{{ number_format($product->import_price) }}đ</span>
+                <span class="current-price">{{ number_format($product->saleprice_product) }}đ</span>
             </div>
 
             <div class="payment-info">
@@ -705,15 +710,21 @@
             </div>
 
             <!-- Size Selection -->
-            <div class="option-group">
-                <label class="option-label">Size:</label>
-                <div class="size-options">
-                    <div class="size-option" data-size="S">S</div>
-                    <div class="size-option" data-size="M">M</div>
-                    <div class="size-option active" data-size="L">L</div>
-                    <div class="size-option" data-size="XL">XL</div>
-                </div>
+<div class="option-group">
+    <label class="option-label">Size:</label>
+    <div class="size-options">
+        @foreach($sizes as $size_product => $quantity)
+            <div 
+                class="size-option {{ $quantity == 0 ? 'disabled' : '' }}"
+                data-size="{{ $size_product }}"
+                data-qty="{{ $quantity }}"
+            >
+                {{ $size_product }}
             </div>
+        @endforeach
+    </div>
+</div>
+
 
             <!-- Quantity -->
             <div class="quantity-section">
@@ -840,24 +851,20 @@
 
 @push('scripts')
 <script>
-    function toggleAccordion(header) {
-    const item = header.parentElement;
-    const icon = header.querySelector('.accordion-icon');
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.size-option').forEach(el => {
+        el.addEventListener('click', function () {
+            document.querySelectorAll('.size-option')
+                .forEach(s => s.classList.remove('active'));
 
-    const isOpen = item.classList.contains('active');
+            this.classList.add('active');
+            window.selectedSize = this.dataset.size;
 
-    // đóng tất cả accordion khác (nếu muốn)
-    document.querySelectorAll('.accordion-item').forEach(i => {
-        i.classList.remove('active');
-        i.querySelector('.accordion-icon').innerText = '+';
+            console.log('Selected size:', window.selectedSize);
+        });
     });
+});
 
-    // mở accordion được bấm
-    if (!isOpen) {
-        item.classList.add('active');
-        icon.innerText = '−';
-    }
-}
 // Quantity Control
 function changeQuantity(amount) {
     const input = document.getElementById('quantityInput');
@@ -879,13 +886,6 @@ document.querySelectorAll('.color-option').forEach(option => {
     });
 });
 
-// Size Selection
-document.querySelectorAll('.size-option').forEach(option => {
-    option.addEventListener('click', function() {
-        document.querySelectorAll('.size-option').forEach(o => o.classList.remove('active'));
-        this.classList.add('active');
-    });
-});
 
 // Thumbnail Click
 document.querySelectorAll('.thumbnail-item').forEach(thumb => {

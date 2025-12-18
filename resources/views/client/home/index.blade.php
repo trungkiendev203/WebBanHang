@@ -276,6 +276,16 @@
 
 @push('js')
 <script>
+    document.querySelectorAll('.size-option').forEach(el => {
+    el.addEventListener('click', () => {
+        document.querySelectorAll('.size-option')
+            .forEach(s => s.classList.remove('active'));
+
+        el.classList.add('active');
+        selectedSize = el.dataset.size;
+    });
+});
+
 new Swiper(".heroSwiper", {
     loop: true,
     autoplay: {
