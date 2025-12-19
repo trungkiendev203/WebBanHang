@@ -30,7 +30,7 @@ public function store(Request $request)
     ]);
 
     Category::create([
-        // 👉 nếu người dùng nhập, lấy giá trị đó; nếu để trống thì tự sinh mã
+
         'code_category' => $request->code_category ?: 'CAT-' . strtoupper(Str::random(5)),
         'name_category' => $request->name_category,
         'slug_category' => Str::slug($request->name_category),
@@ -48,8 +48,6 @@ private function buildCategoryTree($categories, $parentId = null, $prefix = '')
         if ($category->parent_id == $parentId) {
             $category->display_name = $prefix . $category->name_category;
             $result[] = $category;
-
-            // Đệ quy để lấy danh mục con
             $children = $this->buildCategoryTree($categories, $category->id_category, $prefix . '- ');
             $result = array_merge($result, $children);
         }

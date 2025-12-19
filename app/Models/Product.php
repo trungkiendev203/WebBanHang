@@ -18,7 +18,7 @@ class Product extends Model
     'name_product',
     'price_product',
     'saleprice_product',
-    'import_price',   // 👈 Thêm dòng này
+    'import_price',  
     'describe_product',
     'size_product',
     'image',

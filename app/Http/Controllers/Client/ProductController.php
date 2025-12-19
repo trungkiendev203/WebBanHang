@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class ProductController extends Controller
 {
@@ -26,4 +28,38 @@ class ProductController extends Controller
 
         return view('client.product.show', compact('product', 'sizes'));
     }
+    public function suggestProduct(Request $request)
+{
+    $prompt = "Khách hàng mô tả nhu cầu: " . $request->message;
+
+    $aiResponse = Http::withToken(env('OPENAI_API_KEY'))->post(
+        'https://api.openai.com/v1/chat/completions',
+        [
+            'model' => 'gpt-3.5-turbo',
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt],
+            ],
+        ]
+    );
+
+    $aiText = $aiResponse->json()['choices'][0]['message']['content'] ?? '';
+
+    $product = Product::where('name', 'LIKE', '%' . $request->message . '%')->first();
+
+    if ($product) {
+        $productLink = url('/product/' . $product->slug_product);
+
+        return response()->json([
+            'ai_suggest' => $aiText,
+            'product_name' => $product->name,
+            'product_link' => $productLink,
+        ]);
+    }
+
+    return response()->json([
+        'ai_suggest' => $aiText,
+        'message' => 'Chưa tìm được sản phẩm phù hợp trong kho dữ liệu.',
+    ]);
+}
+
 }
