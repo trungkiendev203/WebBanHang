@@ -11,12 +11,11 @@ class ProductImage extends Model
 
     protected $table = 'tb_product_image';
     protected $primaryKey = 'id_image';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'id_product',
         'image_url',
-        'created_at',
     ];
 
     public function product()
@@ -24,4 +23,3 @@ class ProductImage extends Model
         return $this->belongsTo(Product::class, 'id_product', 'id_product');
     }
 }
-

@@ -644,50 +644,6 @@
                     </div>
                 </div>
 
-                {{-- SIZE & SỐ LƯỢNG --}}
-                <div class="section-title mt-4">
-                    <i class="fas fa-ruler"></i>
-                    Size & Số lượng
-                </div>
-
-                <div class="form-group-animated">
-                    <div class="size-type-selector">
-                        <input type="radio" name="size_type" value="char" id="size-char" checked hidden>
-                        <label for="size-char">
-                            <i class="fas fa-font me-2"></i>Size chữ (S, M, L, XL...)
-                        </label>
-                        
-                        <input type="radio" name="size_type" value="num" id="size-num" hidden>
-                        <label for="size-num">
-                            <i class="fas fa-calculator me-2"></i>Size số (27, 28, 29...)
-                        </label>
-                    </div>
-
-                    {{-- SIZE CHỮ --}}
-                    <div id="size-text" class="d-flex flex-wrap gap-3">
-                        @foreach(['S','M','L','XL','XXL','XXXL'] as $size)
-                            <div class="size-item">
-                                <input type="checkbox" name="sizes[]" value="{{ $size }}" id="size_{{ $size }}">
-                                <label for="size_{{ $size }}" class="mb-0 fw-bold">{{ $size }}</label>
-                                <input type="number" name="quantities[{{ $size }}]" value="0" 
-                                       class="form-control" min="0">
-                            </div>
-                        @endforeach
-                    </div>
-
-                    {{-- SIZE SỐ --}}
-                    <div id="size-number" class="d-flex flex-wrap gap-3 d-none">
-                        @for($i = 27; $i <= 44; $i++)
-                            <div class="size-item">
-                                <input type="checkbox" name="sizes[]" value="{{ $i }}" id="size_{{ $i }}">
-                                <label for="size_{{ $i }}" class="mb-0 fw-bold">{{ $i }}</label>
-                                <input type="number" name="quantities[{{ $i }}]" value="0" 
-                                       class="form-control" min="0">
-                            </div>
-                        @endfor
-                    </div>
-                </div>
-
                 {{-- GIÁ CẢ --}}
                 <div class="section-title mt-4">
                     <i class="fas fa-dollar-sign"></i>
@@ -751,6 +707,49 @@
                         </label>
                     </div>
                 </div>
+                {{-- BIẾN THỂ SẢN PHẨM --}}
+<div class="section-title mt-4">
+    <i class="fas fa-boxes"></i>
+    Biến thể sản phẩm (size – màu – giá – tồn kho)
+</div>
+
+<div id="variant-wrapper" class="d-flex flex-column gap-2">
+    <div class="d-flex gap-2 variant-row">
+        <input type="text" name="variants[0][size]" class="form-control input-custom" placeholder="Size" required>
+        <input type="text" name="variants[0][color]" class="form-control input-custom" placeholder="Màu" required>
+        <input type="number" name="variants[0][stock]" class="form-control input-custom" placeholder="Tồn kho" required>
+
+        <button type="button" class="btn btn-danger remove-variant">X</button>
+    </div>
+</div>
+
+<button type="button" id="add-variant" class="btn btn-secondary mt-3">
+    + Thêm biến thể
+</button>
+
+<script>
+let variantIndex = 1;
+
+document.getElementById('add-variant').addEventListener('click', function() {
+    const html = `
+    <div class="d-flex gap-2 mt-2 variant-row">
+        <input type="text" name="variants[${variantIndex}][size]" class="form-control input-custom" placeholder="Size" required>
+        <input type="text" name="variants[${variantIndex}][color]" class="form-control input-custom" placeholder="Màu" required>
+        <input type="number" name="variants[${variantIndex}][stock]" class="form-control input-custom" placeholder="Tồn kho" required>
+
+        <button type="button" class="btn btn-danger remove-variant">X</button>
+    </div>`;
+
+    document.getElementById('variant-wrapper').insertAdjacentHTML('beforeend', html);
+    variantIndex++;
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-variant')) {
+        e.target.parentElement.remove();
+    }
+});
+</script>
 
                 <div class="text-center mt-5">
                     <button type="submit" class="btn btn-submit-custom">

@@ -49,6 +49,16 @@ public function search(Request $request)
 
     return view('client.search.index', compact('products', 'keyword'));
 }
+public function show($slug)
+{
+    $product = Product::where('slug_product', $slug)->firstOrFail();
 
+    return view('client.product.show', compact('product'));
+}
+public function detail($slug)
+{
+    $product = Product::where('slug_product', $slug)->firstOrFail();
 
+    return view('client.product.detail', compact('product'));
+}
 }

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hóa Đơn MLB Fashion</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .invoice-box {
+            max-width: 800px;
+            background: #fff;
+            padding: 30px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            font-size: 16px;
+            line-height: 24px;
+            color: #555;
+        }
+        .header {
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .company-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            text-transform: uppercase;
+        }
+        .invoice-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #333;
+        }
+        .info-group {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            line-height: inherit;
+            text-align: left;
+            border-collapse: collapse;
+        }
+        table th {
+            background-color: #eee;
+            font-weight: bold;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .total-row td {
+            font-weight: bold;
+            background-color: #fafafa;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: right;
+            padding-right: 20px;
+        }
+        .signature {
+            margin-top: 50px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="invoice-box">
+        <div class="header">
+            <div class="company-name">CÔNG TY TNHH MLB FASHION</div>
+            <div>Mã số thuế: 0123456789</div>
+            <div>Địa chỉ: Số 10 – Đường XYZ – Hà Nội</div>
+            <div>SĐT: 0988.123.456</div>
+        </div>
+
+        <div class="invoice-title">HÓA ĐƠN BÁN HÀNG</div>
+
+        <div class="info-group">
+            <strong>Tên khách hàng:</strong> Sweetie<br>
+            <strong>Địa chỉ:</strong> Hà Nội
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 40%">Tên SP</th>
+                    <th style="width: 15%">Mã SP</th>
+                    <th style="width: 10%">SL</th>
+                    <th style="width: 15%">Đơn giá</th>
+                    <th style="width: 20%">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Áo nỉ form rộng unisex</td>
+                    <td>SW2025</td>
+                    <td style="text-align: center;">50</td>
+                    <td style="text-align: right;">150.000đ</td>
+                    <td style="text-align: right;">7.500.000đ</td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="4" style="text-align: right;">TỔNG CỘNG</td>
+                    <td style="text-align: right; color: #d32f2f;">7.500.000đ</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <div>Ngày 06 tháng 12 năm 2025</div>
+            <div style="margin-top: 10px; font-weight: bold;">Người bán hàng</div>
+            <div class="signature">(Ký tên & đóng dấu)</div>
+        </div>
+    </div>
+
+</body>
+</html>

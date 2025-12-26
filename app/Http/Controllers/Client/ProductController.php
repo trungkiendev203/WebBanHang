@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Models\ProductVariant;
 
 class ProductController extends Controller
 {
@@ -15,19 +16,26 @@ class ProductController extends Controller
 
         return view('client.product.detail', compact('product'));
     }
-    public function show($id)
-    {
-       $product = Product::Where('slug_product', $id)->firstOrFail();
-       $rawSizes = $product->size_product; // Giả sử 'sizes' là một thuộc tính trả về chuỗi kích thước
-       $sizes = []; // Khởi tạo mảng kích thước
-       foreach (explode(',', $rawSizes) as $size_product) {
-            [$size, $quantity] = array_pad(explode(':', $size_product), 2, null);
-            $sizes[$size] = (int)($quantity??0);
-       }
-       
+public function show($slug)
+{
+    $product = Product::where('slug_product', $slug)->firstOrFail();
 
-        return view('client.product.show', compact('product', 'sizes'));
-    }
+    // LẤY TOÀN BỘ VARIANT
+    $variants = ProductVariant::where('id_product', $product->id_product)->get();
+    $colors = $variants->pluck('color')->unique()->values();
+
+    // LẤY SIZE + TỔNG STOCK (để render UI size)
+    $sizes = $variants->groupBy('size')->map(function ($group) {
+        return $group->sum('stock');
+    });
+
+    return view('client.product.show', compact(
+        'product',
+        'variants',
+        'sizes',
+        'colors'
+    ));
+}
     public function suggestProduct(Request $request)
 {
     $prompt = "Khách hàng mô tả nhu cầu: " . $request->message;

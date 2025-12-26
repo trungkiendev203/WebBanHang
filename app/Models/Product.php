@@ -13,22 +13,19 @@ class Product extends Model
     protected $primaryKey = 'id_product';
     public $timestamps = true;
 
- protected $fillable = [
+protected $fillable = [
     'code_product',
     'name_product',
+    'slug_product',
     'price_product',
     'saleprice_product',
-    'import_price',  
+    'import_price',
     'describe_product',
-    'size_product',
-    'image',
-    'image_thumb',
-    'quantity',
     'view_product',
     'status_product',
     'id_category',
     'id_label',
-    'slug_product',
+    'image'
 ];
 
 
@@ -37,14 +34,18 @@ class Product extends Model
         return $this->belongsTo(Category::class, 'id_category', 'id_category');
     }
 
-    public function label()
+    public function variants()
     {
-        return $this->belongsTo(Label::class, 'id_label', 'id_label');
+        return $this->hasMany(ProductVariant::class, 'id_product', 'id_product');
     }
+
     public function images()
+    {
+        return $this->hasMany(ProductImage::class, 'id_product', 'id_product');
+    }
+    public function label()
 {
-    return $this->hasMany(ProductImage::class, 'id_product', 'id_product');
+    return $this->belongsTo(Label::class, 'id_label', 'id_label');
 }
 
 }
-

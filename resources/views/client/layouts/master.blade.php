@@ -375,7 +375,7 @@
                     <i class="bi bi-heart"></i>
                     <span class="icon-badge">0</span>
                 </a>
-                <a href="#" title="Giỏ hàng">
+                <a href="{{ route('client.cart') }}" title="Giỏ hàng">
                     <i class="bi bi-bag"></i>
                     <span class="icon-badge">0</span>
                 </a>

@@ -460,10 +460,6 @@
 
       <div class="menu-section">
         <div class="menu-section-title">Bán hàng</div>
-        <a href="{{ route('admin.order.create') }}">
-          <i class="fas fa-plus-circle"></i>
-          <span class="menu-text">Thêm mới</span>
-        </a>
         <a href="{{ route('admin.order.index') }}">
           <i class="fas fa-receipt"></i>
           <span class="menu-text">Đặt hàng</span>

@@ -702,11 +702,18 @@
             <!-- Color Selection -->
             <div class="option-group">
                 <label class="option-label">Màu sắc:</label>
-                <div class="color-options">
-                    <div class="color-option active" style="background: #fff;" data-color="white"></div>
-                    <div class="color-option" style="background: #c41e3a;" data-color="red"></div>
-                    <div class="color-option" style="background: #000;" data-color="black"></div>
-                </div>
+<div class="color-options">
+    @foreach($colors as $color)
+        <div
+            class="color-option"
+            data-color="{{ $color }}"
+            title="{{ $color }}"
+        >
+            {{ $color }}
+        </div>
+    @endforeach
+</div>
+
             </div>
 
             <!-- Size Selection -->
@@ -741,7 +748,17 @@
                 <button class="btn-wishlist" title="Thêm vào yêu thích">
                     <i class="fa fa-heart-o"></i>
                 </button>
-                <button class="btn-add-cart">Thêm vào giỏ hàng</button>
+                <form action="{{ route('client.cart.add') }}" method="POST" id="addToCartForm">
+    @csrf
+
+    <input type="hidden" name="id_product_variant" id="variant_id">
+    <input type="hidden" name="quantity" value="1">
+
+    <button type="submit" class="btn-add-cart">
+        Thêm vào giỏ hàng
+    </button>
+</form>
+
                 <button class="btn-buy-now">Mua ngay</button>
             </div>
 
@@ -851,21 +868,48 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.size-option').forEach(el => {
-        el.addEventListener('click', function () {
-            document.querySelectorAll('.size-option')
-                .forEach(s => s.classList.remove('active'));
+const variants = @json($variants);
+let selectedSize = null;
+let selectedColor = null;
 
-            this.classList.add('active');
-            window.selectedSize = this.dataset.size;
+const variantInput = document.getElementById('variant_id');
+const qtyHiddenInput = document.querySelector('input[name="quantity"]');
+const qtyDisplayInput = document.getElementById('quantityInput');
 
-            console.log('Selected size:', window.selectedSize);
-        });
+function findVariant() {
+    if (!selectedSize || !selectedColor) return;
+
+    const variant = variants.find(v =>
+        v.size === selectedSize && v.color === selectedColor
+    );
+
+    if (variant) {
+        variantInput.value = variant.id_product_variant;
+        console.log('Selected variant:', variant.id_product_variant);
+    }
+}
+
+// Chọn size
+document.querySelectorAll('.size-option:not(.disabled)').forEach(el => {
+    el.addEventListener('click', function () {
+        document.querySelectorAll('.size-option').forEach(s => s.classList.remove('active'));
+        this.classList.add('active');
+        selectedSize = this.dataset.size;
+        findVariant();
     });
 });
 
-// Quantity Control
+// Chọn màu
+document.querySelectorAll('.color-option').forEach(el => {
+    el.addEventListener('click', function () {
+        document.querySelectorAll('.color-option').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        selectedColor = this.dataset.color;
+        findVariant();
+    });
+});
+
+// ✅ Hàm thay đổi số lượng - ĐÃ SỬA
 function changeQuantity(amount) {
     const input = document.getElementById('quantityInput');
     let currentValue = parseInt(input.value) || 1;
@@ -874,18 +918,12 @@ function changeQuantity(amount) {
     if (newValue < 1) newValue = 1;
     
     input.value = newValue;
+    
+    // ✅ QUAN TRỌNG: Cập nhật giá trị vào input hidden
+    qtyHiddenInput.value = newValue;
+    
+    console.log('Quantity updated to:', newValue);
 }
-
-
-
-// Color Selection
-document.querySelectorAll('.color-option').forEach(option => {
-    option.addEventListener('click', function() {
-        document.querySelectorAll('.color-option').forEach(o => o.classList.remove('active'));
-        this.classList.add('active');
-    });
-});
-
 
 // Thumbnail Click
 document.querySelectorAll('.thumbnail-item').forEach(thumb => {
@@ -897,7 +935,15 @@ document.querySelectorAll('.thumbnail-item').forEach(thumb => {
         this.classList.add('active');
     });
 });
+
+// Accordion toggle
+function toggleAccordion(element) {
+    const item = element.parentElement;
+    const icon = element.querySelector('.accordion-icon');
+    
+    item.classList.toggle('active');
+    icon.textContent = item.classList.contains('active') ? '−' : '+';
+}
 </script>
 @endpush
-
 @endsection

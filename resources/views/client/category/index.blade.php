@@ -220,7 +220,7 @@
                                 
                                 {{-- Image --}}
                                 <div class="product-image-container">
-                                    <a href="{{ route('product.detail', $p->slug_product) }}" class="product-link">
+                                    <a href="{{ route('client.product.detail', $p->slug_product) }}" class="product-link">
                                         @if(Str::startsWith($p->image, 'http'))
                                             <img src="{{ $p->image }}" alt="{{ $p->name_product }}" class="product-img">
                                         @else
@@ -274,7 +274,7 @@
 
                                     {{-- Name --}}
                                     <h6 class="product-name-enhanced">
-                                        <a href="{{ route('product.detail', $p->slug_product) }}">
+                                        <a href="{{ route('client.product.detail', $p->slug_product) }}">
                                             {{ $p->name_product }}
                                         </a>
                                     </h6>

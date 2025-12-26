@@ -705,55 +705,7 @@
                     }
                 @endphp
 
-                {{-- SIZE & SỐ LƯỢNG --}}
-                <div class="section-title mt-4 animate__animated animate__fadeInLeft">
-                    <i class="fas fa-ruler"></i>
-                    Size & Số lượng
-                </div>
 
-                <div class="form-group-custom animate__animated animate__fadeInUp">
-                    <div class="size-type-group">
-                        <input type="radio" name="size_type" value="text" id="size-text-radio"
-                            {{ preg_match('/[A-Z]/', array_key_first($sizeData) ?? '') ? 'checked' : '' }}>
-                        <label for="size-text-radio" class="size-type-label">
-                            <i class="fas fa-font"></i>Size chữ (S, M, L, XL...)
-                        </label>
-                        
-                        <input type="radio" name="size_type" value="number" id="size-number-radio"
-                            {{ preg_match('/^\d+$/', array_key_first($sizeData) ?? '') ? 'checked' : '' }}>
-                        <label for="size-number-radio" class="size-type-label">
-                            <i class="fas fa-calculator"></i>Size số (27, 28, 29...)
-                        </label>
-                    </div>
-
-                    {{-- SIZE CHỮ --}}
-                    <div id="size-text" class="d-none d-flex flex-wrap gap-3">
-                        @foreach(['S','M','L','XL','XXL','XXXL'] as $size)
-                            <div class="size-item animate__animated animate__fadeInUp">
-                                <input type="checkbox" name="sizes[]" value="{{ $size }}" 
-                                       id="size_{{ $size }}" {{ isset($sizeData[$size]) ? 'checked' : '' }}>
-                                <span class="fw-bold">{{ $size }}</span>
-                                <input type="number" name="quantities[{{ $size }}]" 
-                                       value="{{ $sizeData[$size] ?? 0 }}" 
-                                       min="0">
-                            </div>
-                        @endforeach
-                    </div>
-
-                    {{-- SIZE SỐ --}}
-                    <div id="size-number" class="d-none d-flex flex-wrap gap-3">
-                        @for($i = 27; $i <= 44; $i++)
-                            <div class="size-item animate__animated animate__fadeInUp">
-                                <input type="checkbox" name="sizes[]" value="{{ $i }}" 
-                                       id="size_{{ $i }}" {{ isset($sizeData[$i]) ? 'checked' : '' }}>
-                                <span class="fw-bold">{{ $i }}</span>
-                                <input type="number" name="quantities[{{ $i }}]" 
-                                       value="{{ $sizeData[$i] ?? 0 }}" 
-                                       min="0">
-                            </div>
-                        @endfor
-                    </div>
-                </div>
 
                 {{-- GIÁ CẢ --}}
                 <div class="section-title mt-4 animate__animated animate__fadeInLeft">
@@ -826,6 +778,86 @@
                         </label>
                     </div>
                 </div>
+{{-- BIẾN THỂ SẢN PHẨM --}}
+<div class="section-title mt-4 animate__animated animate__fadeInLeft">
+    <i class="fas fa-boxes"></i>
+    Biến thể sản phẩm
+</div>
+
+<div id="variant-wrapper" class="d-flex flex-column gap-2">
+
+    {{-- BIẾN THỂ CŨ --}}
+    @foreach($product->variants as $index => $variant)
+        <div class="d-flex gap-2 variant-row">
+            <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $variant->id_variant }}">
+
+            <input type="text" name="variants[{{ $index }}][sku]" class="form-control input-custom"
+                value="{{ $variant->sku }}" placeholder="SKU" required>
+
+            <input type="text" name="variants[{{ $index }}][size]" class="form-control input-custom"
+                value="{{ $variant->size }}" placeholder="Size" required>
+
+            <input type="text" name="variants[{{ $index }}][color]" class="form-control input-custom"
+                value="{{ $variant->color }}" placeholder="Màu" required>
+
+            <input type="number" name="variants[{{ $index }}][price]" class="form-control input-custom"
+                value="{{ $variant->price }}" placeholder="Giá" required>
+
+            <input type="number" name="variants[{{ $index }}][stock]" class="form-control input-custom"
+                value="{{ $variant->stock }}" placeholder="Tồn kho" required>
+
+            <button type="button" class="btn btn-danger remove-variant-old" data-id="{{ $variant->id_variant }}">
+                X
+            </button>
+        </div>
+    @endforeach
+
+</div>
+
+{{-- BIẾN THỂ MỚI --}}
+<button type="button" id="add-variant" class="btn btn-secondary mt-3">
+    + Thêm biến thể mới
+</button>
+
+{{-- INPUT ẨN ĐỂ XÓA --}}
+<input type="hidden" name="deleted_variants" id="deleted_variants">
+
+<script>
+let variantIndex = {{ count($product->variants) }};
+
+// Thêm biến thể mới
+document.getElementById('add-variant').addEventListener('click', function() {
+    const html = `
+    <div class="d-flex gap-2 mt-2 variant-row">
+        <input type="text" name="variants[${variantIndex}][sku]" class="form-control input-custom" placeholder="SKU" required>
+        <input type="text" name="variants[${variantIndex}][size]" class="form-control input-custom" placeholder="Size" required>
+        <input type="text" name="variants[${variantIndex}][color]" class="form-control input-custom" placeholder="Màu" required>
+        <input type="number" name="variants[${variantIndex}][stock]" class="form-control input-custom" placeholder="Tồn kho" required>
+        <button type="button" class="btn btn-danger remove-variant-new">X</button>
+    </div>`;
+
+    document.getElementById('variant-wrapper').insertAdjacentHTML('beforeend', html);
+    variantIndex++;
+});
+
+// Xóa biến thể mới
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-variant-new')) {
+        e.target.parentElement.remove();
+    }
+});
+
+// Xóa biến thể cũ
+let deleted = [];
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-variant-old')) {
+        const id = e.target.dataset.id;
+        deleted.push(id);
+        document.getElementById('deleted_variants').value = deleted.join(',');
+        e.target.parentElement.remove();
+    }
+});
+</script>
 
                 <div class="button-container animate__animated animate__fadeInUp">
                     <button type="submit" class="btn-update-custom">
