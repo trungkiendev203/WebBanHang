@@ -216,6 +216,33 @@
             margin-bottom: 20px;
             letter-spacing: 1px;
         }
+        .menu-tab a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    padding-bottom: 6px;
+    position: relative;
+}
+
+.menu-tab a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background: #000;
+    transition: width 0.3s ease;
+}
+
+.menu-tab a:hover::after {
+    width: 100%;
+}
+
+.menu-tab a:hover {
+    color: #000;
+}
+
 
         footer ul {
             list-style: none;
@@ -395,13 +422,18 @@
     ============================ --}}
     <div class="info-bar">
         <div class="info-bar-container">
-            <div class="info-item">
-                <i class="bi bi-shop"></i>
-                <span>Hệ thống cửa hàng</span>
-            </div>
-            <div class="info-item">
+<div class="info-item menu-tab">
+    <i class="bi bi-shop"></i>
+    <a href="{{ route('client.store-system') }}">
+        Hệ thống cửa hàng
+    </a>
+</div>
+
+            <div class="info-item menu-tab">
                 <i class="bi bi-truck"></i>
-                <span>Thông tin vận chuyển</span>
+                <a href="{{ route('client.shipping-policy') }}">
+                    Thông tin vận chuyển
+                </a>
             </div>
             <div class="info-item">
                 <i class="bi bi-card-checklist"></i>

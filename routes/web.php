@@ -15,7 +15,8 @@ use App\Http\Controllers\Admin\LabelController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\BillController;
 use App\Http\Controllers\Client\OrderController;
-
+use App\Http\Controllers\Client\ProductController;
+use App\Http\Controllers\Client\PageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -149,4 +150,8 @@ Route::post('/cart/checkout', [OrderController::class, 'checkout'])
 
 Route::post('/san-pham/{slug}', [ClientProductController::class, 'detail'])
     ->name('client.product.detail');
+Route::get('/he-thong-cua-hang', [App\Http\Controllers\Client\PageController::class, 'storeSystem'])
+    ->name('client.store-system');
+Route::get('/chinh-sach-van-chuyen', [App\Http\Controllers\Client\PageController::class, 'shippingPolicy'])
+    ->name('client.shipping-policy');
 

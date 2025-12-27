@@ -2,7 +2,6 @@
 @section('title', 'Chỉnh sửa sản phẩm')
 
 @section('content')
-{{-- Import Animate.css từ CDN --}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
 <style>
@@ -230,13 +229,14 @@
         border: 3px dashed #ccc;
         border-radius: 25px;
         background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         position: relative;
         overflow: hidden;
         transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        margin: 5px;
     }
 
     .upload-box:hover {
@@ -307,118 +307,6 @@
         color: #667eea;
         font-weight: 300;
         transition: all 0.4s ease;
-    }
-
-    /* Image Link Area */
-    .image-link-area {
-        display: flex;
-        gap: 1rem;
-        padding: 1.5rem;
-        background: white;
-        border-radius: 18px;
-        border: 2px solid #e0e0e0;
-        transition: all 0.3s ease;
-        margin-top: 1.5rem;
-    }
-
-    .image-link-area:hover {
-        border-color: #667eea;
-        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
-    }
-
-    .btn-add-link {
-        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        border: none;
-        padding: 0.8rem 1.8rem;
-        border-radius: 15px;
-        color: white;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        white-space: nowrap;
-        cursor: pointer;
-    }
-
-    .btn-add-link:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 25px rgba(17, 153, 142, 0.5);
-    }
-
-    /* Size Selection */
-    .size-type-group {
-        display: flex;
-        gap: 1.2rem;
-        margin-bottom: 1.8rem;
-    }
-
-    .size-type-group input[type="radio"] {
-        display: none;
-    }
-
-    .size-type-label {
-        padding: 1rem 2.5rem;
-        border-radius: 50px;
-        border: 2px solid #e0e0e0;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-weight: 600;
-        background: white;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .size-type-group input:checked + .size-type-label {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-color: #667eea;
-        transform: scale(1.08);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
-    }
-
-    .size-type-label:hover {
-        border-color: #667eea;
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-    }
-
-    /* Size Items */
-    .size-item {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        padding: 1rem 1.5rem;
-        background: white;
-        border-radius: 18px;
-        border: 2px solid #e0e0e0;
-        transition: all 0.3s ease;
-    }
-
-    .size-item:hover {
-        border-color: #667eea;
-        transform: translateY(-4px) rotate(1deg);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    }
-
-    .size-item input[type="checkbox"]:checked ~ span {
-        color: #667eea;
-        font-weight: 700;
-    }
-
-    .size-item input[type="number"] {
-        border: 2px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 0.6rem;
-        width: 85px;
-        text-align: center;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    .size-item input[type="number"]:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-        transform: scale(1.05);
-        outline: none;
     }
 
     /* Price Grid */
@@ -584,16 +472,6 @@
         transform: translateY(-6px) scale(1.05);
         box-shadow: 0 18px 45px rgba(102, 126, 234, 0.4);
     }
-
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-12px); }
-        75% { transform: translateX(12px); }
-    }
-
-    .shake {
-        animation: shake 0.5s;
-    }
 </style>
 
 <div class="edit-wrapper">
@@ -661,7 +539,7 @@
                     </div>
                 </div>
 
-                {{-- HÌNH ẢNH --}}
+                {{-- HÌNH ẢNH SẢN PHẨM --}}
                 <div class="section-title mt-4 animate__animated animate__fadeInLeft">
                     <i class="fas fa-images"></i>
                     Hình ảnh sản phẩm
@@ -669,43 +547,27 @@
 
                 <div class="form-group-custom animate__animated animate__fadeInUp">
                     <div class="upload-section">
-                        <div id="image-preview-wrapper" class="d-flex flex-wrap gap-3">
-                            @foreach($product->images as $img)
-                                <div class="upload-box existing animate__animated animate__zoomIn" data-id="{{ $img->id_image }}">
-                                    <img src="{{ asset('uploads/product/'.$img->image_url) }}" alt="">
-                                    <span class="remove-btn" data-id="{{ $img->id_image }}">&times;</span>
-                                </div>
-                            @endforeach
+                        <div id="image-preview-wrapper">
+                            {{-- Hiển thị ảnh cũ --}}
+                            @if($product->images && count($product->images) > 0)
+                                @foreach($product->images as $img)
+                                    <div class="upload-box existing animate__animated animate__zoomIn" data-type="old">
+                                        <img src="{{ asset('uploads/product/'.$img->image_url) }}" alt="">
+                                        <button type="button" class="remove-btn" data-type="old" data-id="{{ $img->id_image }}">&times;</button>
+                                    </div>
+                                @endforeach
+                            @endif
 
+                            {{-- Nút thêm ảnh --}}
                             <div class="upload-box animate__animated animate__bounceIn" id="add-image-btn">
                                 <span class="plus-icon">+</span>
                             </div>
                         </div>
 
                         <input type="file" id="image-input" name="images[]" multiple accept="image/*" style="display:none">
-                        <input type="hidden" name="deleted_images" id="deleted_images">
-
-                        <div class="image-link-area">
-                            <input type="url" id="image-link" class="input-custom" 
-                                   placeholder="🔗 Dán link ảnh tại đây...">
-                            <button type="button" id="add-link-btn" class="btn-add-link">
-                                <i class="fas fa-plus-circle me-2"></i>Thêm
-                            </button>
-                        </div>
+                        <input type="hidden" name="deleted_images" id="deleted-images-input">
                     </div>
                 </div>
-
-                @php
-                    $sizeData = [];
-                    if (!empty($product->size_product)) {
-                        foreach (explode(',', $product->size_product) as $pair) {
-                            [$s, $q] = explode(':', $pair) + [null, 0];
-                            $sizeData[$s] = $q;
-                        }
-                    }
-                @endphp
-
-
 
                 {{-- GIÁ CẢ --}}
                 <div class="section-title mt-4 animate__animated animate__fadeInLeft">
@@ -778,86 +640,36 @@
                         </label>
                     </div>
                 </div>
-{{-- BIẾN THỂ SẢN PHẨM --}}
-<div class="section-title mt-4 animate__animated animate__fadeInLeft">
-    <i class="fas fa-boxes"></i>
-    Biến thể sản phẩm
-</div>
 
-<div id="variant-wrapper" class="d-flex flex-column gap-2">
+                {{-- BIẾN THỂ SẢN PHẨM --}}
+                <div class="section-title mt-4 animate__animated animate__fadeInLeft">
+                    <i class="fas fa-boxes"></i>
+                    Biến thể sản phẩm
+                </div>
 
-    {{-- BIẾN THỂ CŨ --}}
-    @foreach($product->variants as $index => $variant)
-        <div class="d-flex gap-2 variant-row">
-            <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $variant->id_variant }}">
+                <div id="variant-wrapper" class="d-flex flex-column gap-2">
+                    {{-- Biến thể cũ --}}
+                    @foreach($product->variants as $index => $variant)
+                        <div class="d-flex gap-2 variant-row">
+                            <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $variant->id_variant }}">
+                            <input type="text" name="variants[{{ $index }}][sku]" class="form-control input-custom"
+                                   value="{{ $variant->sku }}" placeholder="SKU" required>
+                            <input type="text" name="variants[{{ $index }}][size]" class="form-control input-custom"
+                                   value="{{ $variant->size }}" placeholder="Size" required>
+                            <input type="text" name="variants[{{ $index }}][color]" class="form-control input-custom"
+                                   value="{{ $variant->color }}" placeholder="Màu" required>
+                            <input type="number" name="variants[{{ $index }}][stock]" class="form-control input-custom"
+                                   value="{{ $variant->stock }}" placeholder="Tồn kho" required>
+                            <button type="button" class="btn btn-danger remove-variant-old" data-id="{{ $variant->id_variant }}">X</button>
+                        </div>
+                    @endforeach
+                </div>
 
-            <input type="text" name="variants[{{ $index }}][sku]" class="form-control input-custom"
-                value="{{ $variant->sku }}" placeholder="SKU" required>
+                <button type="button" id="add-variant" class="btn btn-secondary mt-3">
+                    + Thêm biến thể mới
+                </button>
 
-            <input type="text" name="variants[{{ $index }}][size]" class="form-control input-custom"
-                value="{{ $variant->size }}" placeholder="Size" required>
-
-            <input type="text" name="variants[{{ $index }}][color]" class="form-control input-custom"
-                value="{{ $variant->color }}" placeholder="Màu" required>
-
-            <input type="number" name="variants[{{ $index }}][price]" class="form-control input-custom"
-                value="{{ $variant->price }}" placeholder="Giá" required>
-
-            <input type="number" name="variants[{{ $index }}][stock]" class="form-control input-custom"
-                value="{{ $variant->stock }}" placeholder="Tồn kho" required>
-
-            <button type="button" class="btn btn-danger remove-variant-old" data-id="{{ $variant->id_variant }}">
-                X
-            </button>
-        </div>
-    @endforeach
-
-</div>
-
-{{-- BIẾN THỂ MỚI --}}
-<button type="button" id="add-variant" class="btn btn-secondary mt-3">
-    + Thêm biến thể mới
-</button>
-
-{{-- INPUT ẨN ĐỂ XÓA --}}
-<input type="hidden" name="deleted_variants" id="deleted_variants">
-
-<script>
-let variantIndex = {{ count($product->variants) }};
-
-// Thêm biến thể mới
-document.getElementById('add-variant').addEventListener('click', function() {
-    const html = `
-    <div class="d-flex gap-2 mt-2 variant-row">
-        <input type="text" name="variants[${variantIndex}][sku]" class="form-control input-custom" placeholder="SKU" required>
-        <input type="text" name="variants[${variantIndex}][size]" class="form-control input-custom" placeholder="Size" required>
-        <input type="text" name="variants[${variantIndex}][color]" class="form-control input-custom" placeholder="Màu" required>
-        <input type="number" name="variants[${variantIndex}][stock]" class="form-control input-custom" placeholder="Tồn kho" required>
-        <button type="button" class="btn btn-danger remove-variant-new">X</button>
-    </div>`;
-
-    document.getElementById('variant-wrapper').insertAdjacentHTML('beforeend', html);
-    variantIndex++;
-});
-
-// Xóa biến thể mới
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('remove-variant-new')) {
-        e.target.parentElement.remove();
-    }
-});
-
-// Xóa biến thể cũ
-let deleted = [];
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('remove-variant-old')) {
-        const id = e.target.dataset.id;
-        deleted.push(id);
-        document.getElementById('deleted_variants').value = deleted.join(',');
-        e.target.parentElement.remove();
-    }
-});
-</script>
+                <input type="hidden" name="deleted_variants" id="deleted-variants-input">
 
                 <div class="button-container animate__animated animate__fadeInUp">
                     <button type="submit" class="btn-update-custom">
@@ -874,325 +686,120 @@ document.addEventListener('click', function(e) {
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // =================== SIZE TYPE TOGGLE ===================
-    const sizeRadios = document.querySelectorAll('input[name="size_type"]');
-    const sizeText = document.getElementById('size-text');
-    const sizeNumber = document.getElementById('size-number');
-
-    function updateSizeGroup() {
-        const checked = document.querySelector('input[name="size_type"]:checked')?.value || 'text';
-        if (checked === 'number') {
-            sizeText.classList.add('d-none');
-            sizeNumber.classList.remove('d-none');
-        } else {
-            sizeText.classList.remove('d-none');
-            sizeNumber.classList.add('d-none');
-        }
-    }
-
-    updateSizeGroup();
-    sizeRadios.forEach(radio => radio.addEventListener('change', updateSizeGroup));
-
-    // =================== IMAGE UPLOAD ===================
-    const addBtn = document.getElementById('add-image-btn');
+    
+    // ========== QUẢN LÝ HÌNH ẢNH ==========
+    const addImageBtn = document.getElementById('add-image-btn');
     const imageInput = document.getElementById('image-input');
-    const wrapper = document.getElementById('image-preview-wrapper');
-    const deletedInput = document.getElementById('deleted_images');
-    const addLinkBtn = document.getElementById('add-link-btn');
-    const imageLinkInput = document.getElementById('image-link');
-    let fileList = [];
-    let deleted = [];
+    const imageWrapper = document.getElementById('image-preview-wrapper');
+    const deletedImagesInput = document.getElementById('deleted-images-input');
+    
+    let newImageFiles = [];
+    let deletedImageIds = [];
 
-    // Click nút + để upload ảnh
-    addBtn?.addEventListener('click', () => imageInput?.click());
+    // Click nút + để chọn file
+    if (addImageBtn) {
+        addImageBtn.addEventListener('click', function() {
+            imageInput.click();
+        });
+    }
 
     // Khi chọn file mới
-    imageInput?.addEventListener('change', (e) => {
-        const files = Array.from(e.target.files);
-        fileList = [...fileList, ...files];
-        renderNewImages();
-    });
-
-    // Render ảnh mới được upload
-    function renderNewImages() {
-        wrapper.querySelectorAll('.upload-box.new').forEach(box => box.remove());
-        fileList.forEach((file, index) => {
-            const reader = new FileReader();
-            reader.onload = e => {
-                const box = document.createElement('div');
-                box.classList.add('upload-box', 'new', 'animate__animated', 'animate__zoomIn');
-                box.innerHTML = `
-                    <img src="${e.target.result}" alt="">
-                    <span class="remove-btn" data-index="${index}" data-type="new">&times;</span>
-                `;
-                box.dataset.index = index;
-                wrapper.insertBefore(box, addBtn);
-            };
-            reader.readAsDataURL(file);
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            
+            files.forEach(file => {
+                newImageFiles.push(file);
+                
+                // Hiển thị preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const box = document.createElement('div');
+                    box.className = 'upload-box animate__animated animate__zoomIn';
+                    box.setAttribute('data-type', 'new');
+                    box.innerHTML = `
+                        <img src="${e.target.result}" alt="">
+                        <button type="button" class="remove-btn" data-type="new" data-index="${newImageFiles.length - 1}">&times;</button>
+                    `;
+                    imageWrapper.insertBefore(box, addImageBtn);
+                };
+                reader.readAsDataURL(file);
+            });
         });
     }
 
-    // Xử lý click vào wrapper (xóa ảnh hoặc thay thế ảnh existing)
-    wrapper?.addEventListener('click', (e) => {
-        // Xóa ảnh
+    // Xóa ảnh
+    imageWrapper.addEventListener('click', function(e) {
         if (e.target.classList.contains('remove-btn')) {
-            const type = e.target.dataset.type;
+            const type = e.target.getAttribute('data-type');
+            const parent = e.target.closest('.upload-box');
             
-            if (type === 'new') {
-                // Xóa ảnh mới vừa upload
-                const idx = parseInt(e.target.dataset.index);
-                fileList.splice(idx, 1);
-                renderNewImages();
-            } else {
-                // Xóa ảnh cũ (đánh dấu để xóa trên server)
-                const id = e.target.dataset.id;
-                deleted.push(id);
-                deletedInput.value = deleted.join(',');
+            if (type === 'old') {
+                // Xóa ảnh cũ - lưu ID vào input hidden
+                const id = e.target.getAttribute('data-id');
+                deletedImageIds.push(id);
+                deletedImagesInput.value = deletedImageIds.join(',');
+                parent.remove();
+            } 
+            else if (type === 'new') {
+                // Xóa ảnh mới - remove khỏi array
+                const index = parseInt(e.target.getAttribute('data-index'));
+                newImageFiles.splice(index, 1);
+                parent.remove();
                 
-                const box = e.target.parentElement;
-                box.classList.add('animate__animated', 'animate__zoomOut');
-                setTimeout(() => box.remove(), 500);
-            }
-            return;
-        }
-
-        // Click vào ảnh existing để thay thế
-        const box = e.target.closest('.upload-box');
-        if (box && box.classList.contains('existing') && !e.target.classList.contains('remove-btn')) {
-            const tempInput = document.createElement('input');
-            tempInput.type = 'file';
-            tempInput.accept = 'image/*';
-            tempInput.click();
-
-            tempInput.onchange = (ev) => {
-                const newFile = ev.target.files[0];
-                if (newFile) {
-                    const reader = new FileReader();
-                    reader.onload = ev2 => {
-                        const img = box.querySelector('img');
-                        img.classList.add('animate__animated', 'animate__rotateIn');
-                        img.src = ev2.target.result;
-                        box.classList.add('replaced');
-                        box.dataset.newfile = newFile;
-                    };
-                    reader.readAsDataURL(newFile);
-                }
-            };
-        }
-    });
-
-    // Thêm ảnh từ link
-    addLinkBtn?.addEventListener('click', () => {
-        const url = imageLinkInput.value.trim();
-        if (!url) {
-            imageLinkInput.classList.add('shake');
-            setTimeout(() => imageLinkInput.classList.remove('shake'), 500);
-            return;
-        }
-        
-        const box = document.createElement('div');
-        box.classList.add('upload-box', 'animate__animated', 'animate__bounceIn');
-        box.innerHTML = `
-            <img src="${url}" alt="" onerror="this.parentElement.style.border='3px dashed #e74c3c'">
-            <span class="remove-btn" data-type="link">&times;</span>
-            <input type="hidden" name="image_links[]" value="${url}">
-        `;
-        
-        // Thêm event listener cho nút xóa của ảnh link
-        const removeBtn = box.querySelector('.remove-btn');
-        removeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            box.classList.add('animate__animated', 'animate__zoomOut');
-            setTimeout(() => box.remove(), 500);
-        });
-        
-        wrapper.insertBefore(box, addBtn);
-        imageLinkInput.value = '';
-    });
-
-    // =================== FORM VALIDATION ===================
-    const form = document.querySelector('form');
-    form?.addEventListener('submit', function(e) {
-        const requiredInputs = this.querySelectorAll('[required]');
-        let hasError = false;
-        
-        requiredInputs.forEach(input => {
-            if (!input.value.trim()) {
-                hasError = true;
-                input.classList.add('shake', 'animate__animated', 'animate__shakeX');
-                input.style.borderColor = '#e74c3c';
-                
-                setTimeout(() => {
-                    input.classList.remove('shake', 'animate__animated', 'animate__shakeX');
-                    input.style.borderColor = '';
-                }, 1000);
-            }
-        });
-        
-        if (hasError) {
-            e.preventDefault();
-            
-            // Scroll đến input lỗi đầu tiên
-            const firstError = this.querySelector('.shake');
-            if (firstError) {
-                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Cập nhật lại input file
+                updateFileInput();
             }
         }
     });
 
-    // =================== RIPPLE EFFECT ON BUTTON ===================
-    const submitBtn = document.querySelector('.btn-update-custom');
-    submitBtn?.addEventListener('click', function(e) {
-        const ripple = document.createElement('span');
-        const rect = this.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = e.clientX - rect.left - size / 2;
-        const y = e.clientY - rect.top - size / 2;
-        
-        ripple.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.6);
-            left: ${x}px;
-            top: ${y}px;
-            pointer-events: none;
-            animation: ripple-animation 0.8s ease-out;
-        `;
-        
-        this.appendChild(ripple);
-        setTimeout(() => ripple.remove(), 800);
-    });
-
-    // Add ripple animation
-    const rippleStyle = document.createElement('style');
-    rippleStyle.textContent = `
-        @keyframes ripple-animation {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-    `;
-    document.head.appendChild(rippleStyle);
-
-    // =================== AUTO FOCUS WITH ANIMATION ===================
-    setTimeout(() => {
-        const firstInput = document.querySelector('input[name="name_product"]');
-        if (firstInput) {
-            firstInput.focus();
-            firstInput.classList.add('animate__animated', 'animate__pulse');
-        }
-    }, 500);
-
-    // =================== HOVER EFFECTS ON INPUTS ===================
-    const allInputs = document.querySelectorAll('.input-custom, .select-custom, .textarea-custom');
-    allInputs.forEach(input => {
-        input.addEventListener('focus', function() {
-            this.style.transform = 'translateY(-3px)';
+    // Cập nhật input file với array mới
+    function updateFileInput() {
+        const dt = new DataTransfer();
+        newImageFiles.forEach(file => {
+            dt.items.add(file);
         });
-        
-        input.addEventListener('blur', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
-
-    // =================== SIZE BOX INTERACTION ===================
-    const sizeBoxes = document.querySelectorAll('.size-item');
-    sizeBoxes.forEach(box => {
-        const checkbox = box.querySelector('input[type="checkbox"]');
-        const quantityInput = box.querySelector('input[type="number"]');
-        
-        // Khi check/uncheck, focus vào input số lượng
-        checkbox?.addEventListener('change', function() {
-            if (this.checked) {
-                quantityInput?.focus();
-                box.classList.add('animate__animated', 'animate__pulse');
-                setTimeout(() => {
-                    box.classList.remove('animate__animated', 'animate__pulse');
-                }, 1000);
-            }
-        });
-        
-        // Click vào box cũng check checkbox
-        box.addEventListener('click', function(e) {
-            if (e.target !== checkbox && e.target !== quantityInput) {
-                checkbox.checked = !checkbox.checked;
-                checkbox.dispatchEvent(new Event('change'));
-            }
-        });
-    });
-
-    // =================== PRICE INPUT FORMATTING ===================
-    const priceInputs = document.querySelectorAll('input[name="import_price"], input[name="price_product"], input[name="saleprice_product"]');
-    priceInputs.forEach(input => {
-        input.addEventListener('focus', function() {
-            this.parentElement.classList.add('animate__animated', 'animate__pulse');
-            setTimeout(() => {
-                this.parentElement.classList.remove('animate__animated', 'animate__pulse');
-            }, 1000);
-        });
-    });
-
-    // =================== SMOOTH SCROLL FOR SECTIONS ===================
-    const sections = document.querySelectorAll('.section-title');
-    sections.forEach(section => {
-        section.style.cursor = 'pointer';
-        section.addEventListener('click', function() {
-            this.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            this.classList.add('animate__animated', 'animate__headShake');
-            setTimeout(() => {
-                this.classList.remove('animate__animated', 'animate__headShake');
-            }, 1000);
-        });
-    });
-
-    // =================== IMAGE PREVIEW MAGNIFIER ===================
-    const images = wrapper.querySelectorAll('img');
-    images.forEach(img => {
-        img.addEventListener('mouseenter', function() {
-            if (!this.parentElement.classList.contains('upload-box')) return;
-            this.style.transform = 'scale(1.15)';
-            this.style.zIndex = '100';
-        });
-        
-        img.addEventListener('mouseleave', function() {
-            this.style.transform = 'scale(1)';
-            this.style.zIndex = '1';
-        });
-    });
-
-    // =================== TEXTAREA AUTO RESIZE ===================
-    const textarea = document.querySelector('.textarea-custom');
-    if (textarea) {
-        textarea.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
-        
-        // Trigger resize on load
-        textarea.style.height = 'auto';
-        textarea.style.height = (textarea.scrollHeight) + 'px';
+        imageInput.files = dt.files;
     }
 
-    // =================== SUCCESS MESSAGE ANIMATION ===================
-    // Nếu có thông báo thành công sau khi submit
-    const successMessage = document.querySelector('.alert-success');
-    if (successMessage) {
-        successMessage.classList.add('animate__animated', 'animate__bounceIn');
-        setTimeout(() => {
-            successMessage.classList.add('animate__fadeOut');
-            setTimeout(() => successMessage.remove(), 1000);
-        }, 5000);
+    // ========== QUẢN LÝ BIẾN THỂ ==========
+    let variantIndex = {{ count($product->variants) }};
+    const addVariantBtn = document.getElementById('add-variant');
+    const variantWrapper = document.getElementById('variant-wrapper');
+    const deletedVariantsInput = document.getElementById('deleted-variants-input');
+    
+    let deletedVariantIds = [];
+
+    // Thêm biến thể mới
+    if (addVariantBtn) {
+        addVariantBtn.addEventListener('click', function() {
+            const html = `
+                <div class="d-flex gap-2 mt-2 variant-row">
+                    <input type="text" name="variants[${variantIndex}][sku]" class="form-control input-custom" placeholder="SKU" required>
+                    <input type="text" name="variants[${variantIndex}][size]" class="form-control input-custom" placeholder="Size" required>
+                    <input type="text" name="variants[${variantIndex}][color]" class="form-control input-custom" placeholder="Màu" required>
+                    <input type="number" name="variants[${variantIndex}][stock]" class="form-control input-custom" placeholder="Tồn kho" required>
+                    <button type="button" class="btn btn-danger remove-variant-new">X</button>
+                </div>
+            `;
+            variantWrapper.insertAdjacentHTML('beforeend', html);
+            variantIndex++;
+        });
     }
 
-    // =================== LOADING STATE ON SUBMIT ===================
-    form?.addEventListener('submit', function() {
-        const submitButton = this.querySelector('.btn-update-custom');
-        if (submitButton && !this.querySelector('.shake')) {
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...';
-            submitButton.disabled = true;
+    // Xóa biến thể
+    document.addEventListener('click', function(e) {
+        // Xóa biến thể mới
+        if (e.target.classList.contains('remove-variant-new')) {
+            e.target.closest('.variant-row').remove();
+        }
+        
+        // Xóa biến thể cũ
+        if (e.target.classList.contains('remove-variant-old')) {
+            const id = e.target.getAttribute('data-id');
+            deletedVariantIds.push(id);
+            deletedVariantsInput.value = deletedVariantIds.join(',');
+            e.target.closest('.variant-row').remove();
         }
     });
 });

@@ -4,11 +4,13 @@
 {{-- Hero Banner - Enhanced --}}
 <section class="category-hero">
     <div class="hero-overlay"></div>
-    <div class="container h-100">
+
+    <div class="container h-100 d-flex align-items-center justify-content-center">
         <div class="hero-content">
             <div class="hero-badge">Bộ sưu tập mới</div>
             <h1 class="hero-title">{{ $category->name_category }}</h1>
             <p class="hero-subtitle">Khám phá phong cách thời trang cao cấp</p>
+
             <div class="hero-stats">
                 <div class="stat-item">
                     <i class="bi bi-box-seam"></i>
@@ -25,8 +27,10 @@
             </div>
         </div>
     </div>
+
     <div class="hero-shape"></div>
 </section>
+
 {{-- Search & Filter Bar --}}
 <section class="search-filter-bar">
     <div class="container">
@@ -355,7 +359,11 @@
 
 /* ===== HERO SECTION ===== */
 .category-hero {
-    background: linear-gradient(135deg, #c8a882 0%, #9a7f6f 100%);
+    background-image: url('/uploads/products/bannercate.jpeg');
+    background-repeat: no-repeat;     /* ❗ không lặp */
+    background-size: cover;            /* ❗ phủ toàn banner */
+    background-position: center 20px;/* ❗ canh giữa */
+
     min-height: 400px;
     position: relative;
     overflow: hidden;
@@ -363,6 +371,7 @@
     align-items: center;
     padding: 80px 0;
 }
+
 
 .hero-overlay {
     position: absolute;
@@ -388,7 +397,7 @@
     position: relative;
     z-index: 2;
     text-align: center;
-    color: #fff;
+    color: #000000ff;
 }
 
 .hero-badge {
@@ -410,6 +419,7 @@
     font-weight: 700;
     margin-bottom: 15px;
     letter-spacing: -1px;
+    color: #000000ff;
     text-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 
