@@ -538,6 +538,30 @@
                         </select>
                     </div>
                 </div>
+                {{-- BỘ SƯU TẬP --}}
+<div class="section-title mt-4 animate__animated animate__fadeInLeft">
+    <i class="fas fa-tags"></i>
+    Bộ sưu tập
+</div>
+
+<div class="form-group-custom animate__animated animate__fadeInUp">
+    <div class="row">
+        @foreach($collections as $collection)
+            <div class="col-md-4 mb-3">
+                <label class="status-label w-100">
+                    <input type="checkbox"
+                           name="collections[]"
+                           value="{{ $collection->id }}"
+                           {{ $product->collections->contains($collection->id) ? 'checked' : '' }}>
+                    <span>
+                        {{ $collection->name }}
+                    </span>
+                </label>
+            </div>
+        @endforeach
+    </div>
+</div>
+
 
                 {{-- HÌNH ẢNH SẢN PHẨM --}}
                 <div class="section-title mt-4 animate__animated animate__fadeInLeft">
@@ -652,8 +676,7 @@
                     @foreach($product->variants as $index => $variant)
                         <div class="d-flex gap-2 variant-row">
                             <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $variant->id_variant }}">
-                            <input type="text" name="variants[{{ $index }}][sku]" class="form-control input-custom"
-                                   value="{{ $variant->sku }}" placeholder="SKU" required>
+
                             <input type="text" name="variants[{{ $index }}][size]" class="form-control input-custom"
                                    value="{{ $variant->size }}" placeholder="Size" required>
                             <input type="text" name="variants[{{ $index }}][color]" class="form-control input-custom"
@@ -775,7 +798,7 @@ document.addEventListener('DOMContentLoaded', function () {
         addVariantBtn.addEventListener('click', function() {
             const html = `
                 <div class="d-flex gap-2 mt-2 variant-row">
-                    <input type="text" name="variants[${variantIndex}][sku]" class="form-control input-custom" placeholder="SKU" required>
+                    
                     <input type="text" name="variants[${variantIndex}][size]" class="form-control input-custom" placeholder="Size" required>
                     <input type="text" name="variants[${variantIndex}][color]" class="form-control input-custom" placeholder="Màu" required>
                     <input type="number" name="variants[${variantIndex}][stock]" class="form-control input-custom" placeholder="Tồn kho" required>

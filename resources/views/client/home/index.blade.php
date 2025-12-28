@@ -141,31 +141,34 @@
 
             @foreach ($collections as $item)
                 <div class="col-md-6">
-                    <div class="collection-card" 
-                        style="background: 
-                        linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)),
-                        url('{{ asset('uploads/collection/' . $item->image) }}') 
-                        center/cover;">
-                        
-                        <div class="collection-overlay">
-                            
+                    <a href="{{ route('client.collection.show', $item->slug) }}" class="text-decoration-none">
+                        <div class="collection-card"
+                            style="
+                                background:
+                                linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)),
+                                url('{{ asset('uploads/collections/' . $item->banner) }}')
+                                center/cover;
+                            ">
 
-                            @if (!empty($item->subtitle))
-                                <p>{{ $item->subtitle }}</p>
-                            @endif
+                            <div class="collection-overlay">
+                               
 
-                            @if (!empty($item->link))
-                                <a href="{{ $item->link }}" class="btn-discover">Khám phá →</a>
-                            @endif
+                                @if (!empty($item->description))
+                                    <p class="text-white">{{ $item->description }}</p>
+                                @endif
+
+                                <span class="btn-discover">Khám phá →</span>
+                            </div>
+
                         </div>
-
-                    </div>
+                    </a>
                 </div>
             @endforeach
 
         </div>
     </div>
 </section>
+
 
 
 
@@ -188,12 +191,18 @@
 
                    <div class="product-image">
 
-    {{-- Ảnh sản phẩm duy nhất --}}
-    @if(Str::startsWith($product->image, 'http'))
-        <img src="{{ $product->image }}" alt="{{ $product->name_product }}">
-    @else
-        <img src="{{ asset('uploads/product/' . $product->image) }}" alt="{{ $product->name_product }}">
-    @endif
+@php
+    $img = $product->images->first();
+    $src = $img ? $img->image_url : $product->image;
+@endphp
+
+<img
+    src="{{ Str::startsWith($src, 'http') ? $src : asset('uploads/product/'.$src) }}"
+    class="product-image"
+    alt="{{ $product->name_product }}"
+>
+
+
 
     <div class="product-badges">
         @if($product->saleprice_product > 0)

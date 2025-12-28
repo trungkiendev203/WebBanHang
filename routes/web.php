@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\BillController;
 use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\ProductController;
 use App\Http\Controllers\Client\PageController;
+use App\Http\Controllers\Client\CheckoutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,8 @@ Route::middleware('admin.auth')
 
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
+        //COLLECTION
+        Route::resource('collection', \App\Http\Controllers\Admin\CollectionController::class);
 
         // CATEGORY
         Route::resource('category', AdminCategoryController::class);
@@ -104,28 +107,19 @@ Route::get('/search', [HomeController::class, 'search'])
 Route::get('/sale', [ClientCategoryController::class, 'sale'])
     ->name('client.sale');
 
-Route::get('/danh-muc/{slug}', [ClientCategoryController::class, 'show'])
-    ->name('client.category');
-
-Route::get('/san-pham/{slug}', [ClientProductController::class, 'show'])
-    ->name('client.product.show');
-
 /*
 |--------------------------------------------------------------------------
 | CLIENT AUTH (LOGIN)
 |--------------------------------------------------------------------------
 */
-Route::get('/login', function () {
-    return view('client.auth.login');
-})->name('client.login');
+Route::get('/login', [\App\Http\Controllers\Client\AuthController::class, 'showLogin'])
+    ->name('client.login');
 
 /*
 |--------------------------------------------------------------------------
-| CLIENT CART & CHECKOUT (AUTH REQUIRED)
+| CLIENT CART & CHECKOUT
 |--------------------------------------------------------------------------
 */
-
-
 // CART
 Route::get('/cart', [CartController::class, 'index'])
     ->name('client.cart');
@@ -138,20 +132,42 @@ Route::post('/cart/update', [CartController::class, 'update'])
 
 Route::delete('/cart/delete/{variantId}', [CartController::class, 'delete'])
     ->name('client.cart.delete');
-    
 
-// HIỂN THỊ TRANG THANH TOÁN
-Route::get('/cart/checkout', [OrderController::class, 'showCheckout'])
+Route::post('/buy-now', [CartController::class, 'buyNow'])
+    ->name('client.buy.now');
+
+// ✅ CHECKOUT - ĐẶT TRƯỚC CÁC ROUTE CÓ {slug}
+Route::get('/checkout', [CheckoutController::class, 'checkout'])
     ->name('client.checkout');
 
-// XỬ LÝ ĐẶT HÀNG
-Route::post('/cart/checkout', [OrderController::class, 'checkout'])
-    ->name('checkout');
+Route::post('/checkout', [CheckoutController::class, 'store'])
+    ->name('client.checkout.store');
+
+/*
+|--------------------------------------------------------------------------
+| CLIENT PAGES
+|--------------------------------------------------------------------------
+*/
+Route::get('/he-thong-cua-hang', [PageController::class, 'storeSystem'])
+    ->name('client.store-system');
+
+Route::get('/chinh-sach-van-chuyen', [PageController::class, 'shippingPolicy'])
+    ->name('client.shipping-policy');
+
+/*
+|--------------------------------------------------------------------------
+| CLIENT DYNAMIC ROUTES (ĐẶT CUỐI CÙNG)
+|--------------------------------------------------------------------------
+*/
+Route::get('/danh-muc/{slug}', [ClientCategoryController::class, 'show'])
+    ->name('client.category');
+
+Route::get('/san-pham/{slug}', [ClientProductController::class, 'show'])
+    ->name('client.product.show');
 
 Route::post('/san-pham/{slug}', [ClientProductController::class, 'detail'])
     ->name('client.product.detail');
-Route::get('/he-thong-cua-hang', [App\Http\Controllers\Client\PageController::class, 'storeSystem'])
-    ->name('client.store-system');
-Route::get('/chinh-sach-van-chuyen', [App\Http\Controllers\Client\PageController::class, 'shippingPolicy'])
-    ->name('client.shipping-policy');
 
+Route::get('/collection/{slug}', 
+    [\App\Http\Controllers\Client\CollectionController::class, 'show']
+)->name('client.collection.show');

@@ -16,4 +16,10 @@ class ProductVariant extends Model
         'stock',
         'sku'
     ];
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'id_product', 'id_product');
+    }
 }
+
+    

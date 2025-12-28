@@ -10,6 +10,7 @@ use App\Models\Label;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use Illuminate\Support\Str;
+use App\Models\Collection;
 
 class ProductController extends Controller
 {
@@ -36,9 +37,15 @@ class ProductController extends Controller
     // ================================
     public function create()
     {
-        $categories = Category::all();
-        $labels = Label::all();
-        return view('admin.product.create', compact('categories', 'labels'));
+        $categories  = Category::all();
+        $labels      = Label::all();
+        $collections = Collection::where('status', 1)->get();
+
+        return view('admin.product.create', compact(
+            'categories',
+            'labels',
+            'collections'
+        ));
     }
 
     // ================================
@@ -58,12 +65,11 @@ class ProductController extends Controller
             'images.*'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10048',
         ]);
 
-        // 🔹 Create slug
+        // 🔹 Slug
         $slug = Str::slug($request->name_product) . '-' . time();
 
-        // 🔹 Create product code
+        // 🔹 Code
         $code = 'SP-' . strtoupper(substr(md5(uniqid()), 0, 6));
-
 
         // 🔹 Create product
         $product = Product::create([
@@ -80,18 +86,25 @@ class ProductController extends Controller
             'id_label'          => $request->id_label,
         ]);
 
+        // 🔹 Collections
+        if ($request->has('collections')) {
+            $product->collections()->sync($request->collections);
+        }
+
+        // 🔹 VARIANTS (DÙNG STOCK)
         if ($request->variants) {
             foreach ($request->variants as $variant) {
                 ProductVariant::create([
                     'id_product' => $product->id_product,
-                    'sku'        => 'SKU-' . strtoupper(Str::random(6)), // AUTO SKU
+                    'sku'        => 'SKU-' . strtoupper(Str::random(6)),
                     'size'       => $variant['size'],
                     'color'      => $variant['color'],
-                    'stock'      => $variant['stock'],
+                    'stock'      => (int) $variant['stock'], // ✅ CHUẨN
                 ]);
             }
         }
 
+        // 🔹 Images
         if ($request->hasFile('images')) {
             $firstImage = null;
 
@@ -119,17 +132,29 @@ class ProductController extends Controller
             ->with('success', 'Thêm sản phẩm thành công!');
     }
 
+    // ================================
+    // 📌 EDIT
+    // ================================
     public function edit($id)
     {
-        $product = Product::with(['images', 'variants'])->findOrFail($id);
-        $categories = Category::all();
-        $labels = Label::all();
-        return view('admin.product.edit', compact('product', 'categories', 'labels'));
+        $product = Product::with(['images', 'variants', 'collections'])->findOrFail($id);
+        $categories  = Category::all();
+        $labels      = Label::all();
+        $collections = Collection::where('status', 1)->get();
+
+        return view('admin.product.edit', compact(
+            'product',
+            'categories',
+            'labels',
+            'collections'
+        ));
     }
 
+    // ================================
+    // 📌 UPDATE
+    // ================================
     public function update(Request $request, $id)
-    {   
-
+    {
         $product = Product::findOrFail($id);
 
         $validated = $request->validate([
@@ -144,20 +169,23 @@ class ProductController extends Controller
         ]);
 
         $product->update($validated);
+
+        // 🔥 RESET VARIANTS
         ProductVariant::where('id_product', $product->id_product)->delete();
 
         if ($request->variants) {
             foreach ($request->variants as $variant) {
                 ProductVariant::create([
                     'id_product' => $product->id_product,
-                    'sku'        => 'SKU-' . strtoupper(Str::random(6)), // AUTO SKU
+                    'sku'        => 'SKU-' . strtoupper(Str::random(6)),
                     'size'       => $variant['size'],
                     'color'      => $variant['color'],
-
-                    'stock'      => $variant['stock'],
+                    'stock'      => (int) $variant['stock'], // ✅
                 ]);
             }
         }
+
+        // 🔹 DELETE IMAGES
         if ($request->filled('deleted_images')) {
             $ids = explode(',', $request->deleted_images);
             $images = ProductImage::whereIn('id_image', $ids)->get();
@@ -169,6 +197,7 @@ class ProductController extends Controller
             }
         }
 
+        // 🔹 ADD IMAGES
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
                 $name = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
@@ -182,14 +211,20 @@ class ProductController extends Controller
             }
         }
 
-        // ================================
-        // 📌 UPDATE MAIN IMAGE
-        // ================================
+        // 🔹 UPDATE MAIN IMAGE
         $mainImage = ProductImage::where('id_product', $product->id_product)
-                                 ->latest('id_image')->first();
+            ->latest('id_image')
+            ->first();
 
         if ($mainImage) {
             $product->update(['image' => $mainImage->image_url]);
+        }
+
+        // 🔹 Collections
+        if ($request->has('collections')) {
+            $product->collections()->sync($request->collections);
+        } else {
+            $product->collections()->sync([]);
         }
 
         return redirect()->route('admin.product.edit', $product->id_product)
@@ -197,12 +232,13 @@ class ProductController extends Controller
     }
 
     // ================================
-    // 📌 DELETE PRODUCT
+    // 📌 DELETE
     // ================================
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
 
+        $product->collections()->detach();
         $product->variants()->delete();
 
         foreach ($product->images as $img) {
@@ -217,18 +253,20 @@ class ProductController extends Controller
             ->with('success', 'Xóa sản phẩm thành công!');
     }
 
-public function detail($slug)
-{
-    $product = Product::where('slug_product', $slug)->firstOrFail();
+    // ================================
+    // 📌 CLIENT DETAIL
+    // ================================
+    public function detail($slug)
+    {
+        $product = Product::where('slug_product', $slug)->firstOrFail();
 
-    // Lấy size + số lượng
-    $sizes = $product->variants
-        ->groupBy('size')
-        ->map(function ($items) {
-            return $items->sum('quantity');
-        });
+        // ✅ DÙNG STOCK
+        $sizes = $product->variants
+            ->groupBy('size')
+            ->map(function ($items) {
+                return $items->sum('stock');
+            });
 
-    return view('client.product.detail', compact('product', 'sizes'));
-}
-
+        return view('client.product.detail', compact('product', 'sizes'));
+    }
 }

@@ -446,9 +446,19 @@
                     <a href="#">Đăng nhập</a> ngay để nhận ưu đãi
                 </div>
                 
-                <form action="{{ route('checkout') }}" method="POST">
+                <form action="{{ route('client.checkout.store') }}" method="POST">
+
                     @csrf
-                    
+@foreach($items as $item)
+    <input type="hidden"
+           name="cart[{{ $item['id_product_variant'] }}][id_product_variant]"
+           value="{{ $item['id_product_variant'] }}">
+
+    <input type="hidden"
+           name="cart[{{ $item['id_product_variant'] }}][quantity]"
+           value="{{ $item['quantity'] }}">
+@endforeach
+
                     <div class="form-group">
                         <label class="form-label">Tên</label>
                         <input type="text" name="name_customer" class="form-input" 
@@ -516,7 +526,7 @@
                             Tìm hiểu thêm <a href="#">Tại đây</a>
                         </p>
                     </div>
-                    
+
                     <button type="submit" class="btn-checkout">
                         ĐẶT HÀNG NGAY
                     </button>
@@ -524,34 +534,37 @@
             </div>
             
 <div class="order-summary">
+    @foreach ($items as $item)
+        <div class="product-item">
+            <div class="product-info">
 
-@foreach ($cart as $item)
-@php
-    $subtotal = $item['price'] * $item['quantity'];
-@endphp
+                <div class="product-image">
+                    <img
+                        src="{{ asset('uploads/product/' . $item['image']) }}"
+                        alt="{{ $item['name'] }}"
+                    >
+                    <div class="product-quantity">{{ $item['quantity'] }}</div>
+                </div>
 
-<div class="product-item">
-    <div class="product-image">
-        <img src="{{ asset('uploads/product/' . $item['image']) }}">
-        <span class="product-quantity">{{ $item['quantity'] }}</span>
-    </div>
+                <div class="product-title">
+                    {{ $item['name'] }}
+                    ({{ $item['color'] }} - {{ $item['size'] }})
+                </div>
 
-    <div class="product-info">
-        <div class="product-title">
-            {{ $item['name'] }}
-            - {{ $item['color'] }} - {{ $item['size'] }}
+                <div class="product-meta">
+                    Số lượng: {{ $item['quantity'] }}
+                </div>
+            </div>
+
+            <div class="product-price">
+                {{ number_format($item['price'] * $item['quantity']) }}đ
+            </div>
         </div>
-
-        <div class="product-meta">
-            Số lượng: {{ $item['quantity'] }}
-        </div>
-    </div>
-
-    <div class="product-price">
-        {{ number_format($subtotal) }}đ
-    </div>
+    @endforeach
 </div>
-@endforeach
+
+
+
 
 
         </div>

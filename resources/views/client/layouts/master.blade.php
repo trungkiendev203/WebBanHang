@@ -358,7 +358,28 @@
 </head>
 
 <body>
+   <!-- ✅ THÔNG BÁO SUCCESS/ERROR -->
+    @if(session('success'))
+        <div style="position: fixed; top: 20px; right: 20px; z-index: 9999; background: #28a745; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 500;">
+            ✓ {{ session('success') }}
+        </div>
+        <script>
+            setTimeout(() => {
+                document.querySelector('div[style*="position: fixed"]').style.display = 'none';
+            }, 5000);
+        </script>
+    @endif
 
+    @if(session('error'))
+        <div style="position: fixed; top: 20px; right: 20px; z-index: 9999; background: #dc3545; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 500;">
+            ✗ {{ session('error') }}
+        </div>
+        <script>
+            setTimeout(() => {
+                document.querySelector('div[style*="position: fixed"]').style.display = 'none';
+            }, 5000);
+        </script>
+    @endif
     {{-- ===========================
          MAIN HEADER
     ============================ --}}
@@ -402,9 +423,16 @@
                     <i class="bi bi-heart"></i>
                     <span class="icon-badge">0</span>
                 </a>
-                <a href="{{ route('client.cart') }}" title="Giỏ hàng">
-                    <i class="bi bi-bag"></i>
-                    <span class="icon-badge">0</span>
+@php
+    $cart = session('cart', []);
+    $cartCount = array_sum(array_column($cart, 'quantity'));
+@endphp
+
+<a href="{{ route('client.cart') }}" title="Giỏ hàng">
+    <i class="bi bi-bag"></i>
+    <span class="icon-badge">{{ $cartCount }}</span>
+</a>
+
                 </a>
                 <a href="#" title="Tài khoản">
                     <i class="bi bi-person"></i>

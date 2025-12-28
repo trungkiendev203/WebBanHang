@@ -25,10 +25,12 @@ class Product extends Model
     ];
 
     // ✅ QUAN HỆ VỚI PRODUCT_IMAGES (NHIỀU ẢNH)
-    public function images()
-    {
-        return $this->hasMany(ProductImage::class, 'id_product', 'id_product');
-    }
+public function images()
+{
+    return $this->hasMany(ProductImage::class, 'id_product', 'id_product')
+                ->orderBy('id_image', 'ASC'); // ẢNH UPLOAD ĐẦU TIÊN
+}
+
 
     // ✅ QUAN HỆ VỚI VARIANTS
     public function variants()
@@ -47,4 +49,14 @@ class Product extends Model
     {
         return $this->belongsTo(Label::class, 'id_label', 'id_label');
     }
+public function collections()
+{
+    return $this->belongsToMany(
+        Collection::class,
+        'collection_product',
+        'product_id',
+        'collection_id'
+    );
+}
+
 }

@@ -405,9 +405,11 @@
                 </thead>
                 <tbody>
                     @forelse($products as $item)
-                    @php 
-                        $totalStock = $item->variants->sum('stock');
-                    @endphp
+@php 
+    $totalStock = $item->variants->sum('stock');
+
+@endphp
+
                     <tr>
                         {{-- Mã SP --}}
                         <td>
@@ -583,11 +585,12 @@
                                     </span>
                                 </td>
                                 <td><strong class="price-tag">{{ number_format($v->price) }}₫</strong></td>
-                                <td>
-                                    <span class="badge badge-modern {{ $v->stock > 0 ? 'badge-gradient-success' : 'badge-gradient-danger' }}">
-                                        {{ $v->stock }}
-                                    </span>
-                                </td>
+<td>
+    <span class="badge badge-modern {{ $v->stock > 0 ? 'badge-gradient-success' : 'badge-gradient-danger' }}">
+        {{ $v->stock }}
+    </span>
+</td>
+
                             </tr>
                             @endforeach
                         </tbody>

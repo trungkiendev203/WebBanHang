@@ -452,6 +452,10 @@
           <i class="fas fa-tags"></i>
           <span class="menu-text">Hiệu sản phẩm</span>
         </a>
+          <a href="{{ route('admin.collection.index') }}">
+          <i class="fas fa-tags"></i>
+          <span class="menu-text">Bộ sưu tập</span>
+        </a>
         <a href="{{ route('admin.product.index') }}">
           <i class="fas fa-palette"></i>
           <span class="menu-text">Sản phẩm</span>

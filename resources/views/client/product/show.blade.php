@@ -887,12 +887,17 @@ body {
 </div>
 
             <div class="main-image-container">
-                <img
-    src="{{ asset('uploads/product/' . ($product->images->first()->image_url ?? $product->image)) }}"
+<img
+    src="{{ asset(
+        $product->images->first()
+            ? 'uploads/product/' . $product->images->first()->image_url
+            : 'uploads/product/' . $product->image
+    ) }}"
     alt="{{ $product->name_product }}"
     class="main-image"
     id="mainImage"
 >
+
 
             </div>
         </div>
@@ -982,9 +987,14 @@ body {
 </form>
 
                 
-                <a href="{{ route('client.checkout') }}" class="btn btn-danger w-95 b-2">
-    MUA NGAY
-</a>
+<form action="{{ route('client.buy.now') }}" method="POST">
+    @csrf
+    <input type="hidden" name="id_product_variant" id="variant_id_buy_now">
+<input type="hidden" name="quantity" id="buy_now_quantity" value="1">
+    <button type="submit" class="btn-buy-now">MUA NGAY</button>
+</form>
+
+
             </div>
 
             <!-- Accordion Info -->
@@ -1120,6 +1130,8 @@ function findVariant() {
 
     if (variant) {
         variantInput.value = variant.id_product_variant;
+        document.getElementById('variant_id_buy_now').value = variant.id_product_variant;
+
         console.log('Selected variant:', variant.id_product_variant);
     }
 }
@@ -1133,7 +1145,12 @@ document.querySelectorAll('.size-option:not(.disabled)').forEach(el => {
         findVariant();
     });
 });
-
+document.querySelector('.btn-buy-now').addEventListener('click', function (e) {
+    if (!document.getElementById('variant_id_buy_now').value) {
+        e.preventDefault();
+        alert('Vui lòng chọn size và màu');
+    }
+});
 // Chọn màu
 document.querySelectorAll('.color-option').forEach(el => {
     el.addEventListener('click', function () {
@@ -1149,16 +1166,20 @@ function changeQuantity(amount) {
     const input = document.getElementById('quantityInput');
     let currentValue = parseInt(input.value) || 1;
     let newValue = currentValue + amount;
-    
+
     if (newValue < 1) newValue = 1;
-    
+
     input.value = newValue;
-    
-    // ✅ QUAN TRỌNG: Cập nhật giá trị vào input hidden
+
+    // add to cart
     qtyHiddenInput.value = newValue;
-    
+
+    // buy now
+    document.getElementById('buy_now_quantity').value = newValue;
+
     console.log('Quantity updated to:', newValue);
 }
+
 
 // Thumbnail Click
 document.querySelectorAll('.thumbnail-item').forEach(thumb => {

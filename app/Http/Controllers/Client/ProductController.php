@@ -14,40 +14,41 @@ class ProductController extends Controller
     // ✅ XÓA method detail() CŨ - KHÔNG CẦN NỮA
     
     // ✅ CHỈ GIỮ LẠI METHOD show() - ĐÃ SỬA
-    public function show($slug)
-    {   
-        // Load product với quan hệ images
-        $product = Product::with('images')
-                          ->where('slug_product', $slug)
-                          ->firstOrFail();
+public function show($slug)
+{
+    $product = Product::where('slug_product', $slug)
+        ->with(['images' => function ($q) {
+            $q->orderBy('id_image', 'ASC'); // ✅ ĐÚNG – ẢNH UPLOAD ĐẦU TIÊN
+        }])
+        ->firstOrFail();
 
-        // LẤY TOÀN BỘ VARIANT
-        $variants = ProductVariant::where('id_product', $product->id_product)->get();
-        
-        // LẤY MÀU DUY NHẤT
-        $colors = $variants->pluck('color')->unique()->values();
+    $variants = ProductVariant::where('id_product', $product->id_product)->get();
 
-        // LẤY SIZE + TỔNG STOCK
-        $sizes = $variants->groupBy('size')->map(function ($group) {
-            return $group->sum('stock');
-        });
-        
-        // SẢN PHẨM GỢI Ý
-        $suggestProducts = Product::where('status_product', 1)
-            ->where('id_product', '!=', $product->id_product)
-            ->orderBy('view_product', 'desc')
-            ->limit(6)
-            ->get();
+    $colors = $variants->pluck('color')->unique()->values();
 
-        // ✅ QUAN TRỌNG: Đổi view từ 'client.product.show' sang 'client.product.detail'
-        return view('client.product.show', compact(
-            'product',
-            'variants',
-            'sizes',
-            'suggestProducts',
-            'colors'
-        ));
-    }
+    $sizes = $variants->groupBy('size')->map(function ($group) {
+        return $group->sum('stock');
+    });
+
+    $suggestProducts = Product::where('status_product', 1)
+        ->where('id_product', '!=', $product->id_product)
+        ->orderBy('view_product', 'desc')
+        ->limit(6)
+        ->get();
+
+    $mainImage = $product->images->first();
+
+    return view('client.product.show', compact(
+        'product',
+        'variants',
+        'sizes',
+        'suggestProducts',
+        'colors',
+        'mainImage'
+    ));
+}
+
+
 
     public function suggestProduct(Request $request)
     {
