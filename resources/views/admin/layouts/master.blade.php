@@ -476,17 +476,17 @@
 
       <div class="menu-section">
         <div class="menu-section-title">Khác</div>
-        <a href="#">
-          <i class="fas fa-list"></i>
-          <span class="menu-text">Danh sách</span>
+        <a href="{{ route('admin.shipping.index') }}">
+          <i class="fas fa-truck"></i>
+          <span class="menu-text">Vận Chuyển</span>
         </a>
         <a href="#">
           <i class="fas fa-bullhorn"></i>
           <span class="menu-text">Quảng cáo</span>
         </a>
-        <a href="#">
+        <a href="{{ route('admin.event.index') }}">
           <i class="fas fa-bookmark"></i>
-          <span class="menu-text">Tính thành</span>
+          <span class="menu-text">Sự Kiện</span>
         </a>
         <a href="#">
           <i class="fas fa-envelope"></i>

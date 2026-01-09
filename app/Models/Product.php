@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -43,6 +42,10 @@ public function images()
     {
         return $this->belongsTo(Category::class, 'id_category', 'id_category');
     }
+public function orderDetails()
+{
+    return $this->hasMany(OrderDetail::class, 'id_product', 'id_product');
+}
 
     // ✅ QUAN HỆ VỚI LABEL
     public function label()

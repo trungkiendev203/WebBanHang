@@ -971,32 +971,28 @@ body {
             </div>
 
             <!-- Action Buttons -->
-            <div class="action-buttons">
-                <button class="btn-wishlist" title="Thêm vào yêu thích">
-                    <i class="fa fa-heart-o"></i>
-                </button>
-                <form action="{{ route('client.cart.add') }}" method="POST" id="addToCartForm">
-    @csrf
-
-    <input type="hidden" name="id_product_variant" id="variant_id">
-    <input type="hidden" name="quantity" value="1">
-
-    <button type="submit" class="btn-add-cart">
-        Thêm vào giỏ hàng
+ <!-- Action Buttons -->
+<div class="action-buttons">
+    <button class="btn-wishlist" title="Thêm vào yêu thích">
+        <i class="fa fa-heart-o"></i>
     </button>
-</form>
+    
+    <!-- Form Thêm vào giỏ -->
+    <form action="{{ route('client.cart.add') }}" method="POST" id="addToCartForm">
+        @csrf
+        <input type="hidden" name="id_product_variant" id="variant_id">
+        <input type="hidden" name="quantity" id="add_cart_quantity" value="1">
+        <button type="submit" class="btn-add-cart">Thêm vào giỏ hàng</button>
+    </form>
 
-                
-<form action="{{ route('client.buy.now') }}" method="POST">
-    @csrf
-    <input type="hidden" name="id_product_variant" id="variant_id_buy_now">
-<input type="hidden" name="quantity" id="buy_now_quantity" value="1">
-    <button type="submit" class="btn-buy-now">MUA NGAY</button>
-</form>
-
-
-            </div>
-
+    <!-- Form Mua ngay -->
+    <form action="{{ route('client.buy.now') }}" method="POST" id="buyNowForm">
+        @csrf
+        <input type="hidden" name="id_product_variant" id="variant_id_buy_now">
+        <input type="hidden" name="quantity" id="buy_now_quantity" value="1">
+        <button type="submit" class="btn-buy-now">MUA NGAY</button>
+    </form>
+</div>
             <!-- Accordion Info -->
             <div class="info-accordion">
 <div class="accordion-item">
@@ -1116,52 +1112,138 @@ body {
 const variants = @json($variants);
 let selectedSize = null;
 let selectedColor = null;
+let selectedVariant = null;
 
 const variantInput = document.getElementById('variant_id');
-const qtyHiddenInput = document.querySelector('input[name="quantity"]');
+const variantInputBuyNow = document.getElementById('variant_id_buy_now');
+const qtyHiddenInputCart = document.getElementById('add_cart_quantity');
 const qtyDisplayInput = document.getElementById('quantityInput');
+const buyNowQtyInput = document.getElementById('buy_now_quantity');
 
+// ===== Tìm variant =====
 function findVariant() {
-    if (!selectedSize || !selectedColor) return;
+    if (!selectedSize || !selectedColor) {
+        selectedVariant = null;
+        variantInput.value = '';
+        variantInputBuyNow.value = '';
+        updateStockDisplay();
+        return;
+    }
 
     const variant = variants.find(v =>
-        v.size === selectedSize && v.color === selectedColor
+        v.size.trim() === selectedSize.trim() && 
+        v.color.trim() === selectedColor.trim()
     );
 
     if (variant) {
+        selectedVariant = variant;
         variantInput.value = variant.id_product_variant;
-        document.getElementById('variant_id_buy_now').value = variant.id_product_variant;
+        variantInputBuyNow.value = variant.id_product_variant;
+        console.log('✅ Found variant:', variant);
+    } else {
+        selectedVariant = null;
+        variantInput.value = '';
+        variantInputBuyNow.value = '';
+        console.log('❌ No variant found for', selectedSize, selectedColor);
+    }
+    
+    updateStockDisplay();
+}
 
-        console.log('Selected variant:', variant.id_product_variant);
+// ===== Disable/Enable buttons =====
+function disableButtons() {
+    const btnAdd = document.querySelector('.btn-add-cart');
+    const btnBuy = document.querySelector('.btn-buy-now');
+    
+    if (btnAdd) {
+        btnAdd.disabled = true;
+        btnAdd.style.opacity = '0.5';
+        btnAdd.style.cursor = 'not-allowed';
+    }
+    if (btnBuy) {
+        btnBuy.disabled = true;
+        btnBuy.style.opacity = '0.5';
+        btnBuy.style.cursor = 'not-allowed';
     }
 }
 
-// Chọn size
-document.querySelectorAll('.size-option:not(.disabled)').forEach(el => {
+function enableButtons() {
+    const btnAdd = document.querySelector('.btn-add-cart');
+    const btnBuy = document.querySelector('.btn-buy-now');
+    
+    if (btnAdd) {
+        btnAdd.disabled = false;
+        btnAdd.style.opacity = '1';
+        btnAdd.style.cursor = 'pointer';
+    }
+    if (btnBuy) {
+        btnBuy.disabled = false;
+        btnBuy.style.opacity = '1';
+        btnBuy.style.cursor = 'pointer';
+    }
+}
+
+// ===== Update stock display =====
+function updateStockDisplay() {
+    const stockDisplay = document.querySelector('.stock-status');
+    if (!stockDisplay) return;
+
+    if (!selectedSize || !selectedColor) {
+        stockDisplay.textContent = 'Chọn size và màu để xem tồn kho';
+        stockDisplay.style.color = '#666';
+        stockDisplay.style.background = '#f8f9fa';
+        disableButtons();
+        return;
+    }
+
+    if (!selectedVariant) {
+        stockDisplay.textContent = '❌ Không có sản phẩm với size & màu này';
+        stockDisplay.style.color = '#dc3545';
+        stockDisplay.style.background = '#ffebee';
+        disableButtons();
+        return;
+    }
+
+    if (selectedVariant.stock > 0) {
+        stockDisplay.textContent = `✓ Còn ${selectedVariant.stock} sản phẩm`;
+        stockDisplay.style.color = '#28a745';
+        stockDisplay.style.background = '#e8f5e9';
+        enableButtons();
+    } else {
+        stockDisplay.textContent = '❌ Hết hàng';
+        stockDisplay.style.color = '#dc3545';
+        stockDisplay.style.background = '#ffebee';
+        disableButtons();
+    }
+}
+
+// ===== Chọn size =====
+document.querySelectorAll('.size-option').forEach(el => {
     el.addEventListener('click', function () {
+        if (this.classList.contains('disabled')) return;
+        
         document.querySelectorAll('.size-option').forEach(s => s.classList.remove('active'));
         this.classList.add('active');
         selectedSize = this.dataset.size;
+        
+        console.log('🔵 Selected Size:', selectedSize);
         findVariant();
     });
 });
-document.querySelector('.btn-buy-now').addEventListener('click', function (e) {
-    if (!document.getElementById('variant_id_buy_now').value) {
-        e.preventDefault();
-        alert('Vui lòng chọn size và màu');
-    }
-});
-// Chọn màu
+
+// ===== Chọn màu =====
 document.querySelectorAll('.color-option').forEach(el => {
     el.addEventListener('click', function () {
         document.querySelectorAll('.color-option').forEach(c => c.classList.remove('active'));
         this.classList.add('active');
         selectedColor = this.dataset.color;
+        
+        console.log('🟢 Selected Color:', selectedColor);
         findVariant();
     });
 });
 
-// ✅ Hàm thay đổi số lượng - ĐÃ SỬA
+// ===== Thay đổi số lượng =====
 function changeQuantity(amount) {
     const input = document.getElementById('quantityInput');
     let currentValue = parseInt(input.value) || 1;
@@ -1169,37 +1251,115 @@ function changeQuantity(amount) {
 
     if (newValue < 1) newValue = 1;
 
+    if (selectedVariant && newValue > selectedVariant.stock) {
+        alert(`Chỉ còn ${selectedVariant.stock} sản phẩm trong kho`);
+        newValue = selectedVariant.stock;
+    }
+
     input.value = newValue;
-
-    // add to cart
-    qtyHiddenInput.value = newValue;
-
-    // buy now
-    document.getElementById('buy_now_quantity').value = newValue;
-
-    console.log('Quantity updated to:', newValue);
+    if (qtyHiddenInputCart) qtyHiddenInputCart.value = newValue;
+    if (buyNowQtyInput) buyNowQtyInput.value = newValue;
 }
 
+// ===== Validation THÊM GIỎ =====
+const addToCartForm = document.getElementById('addToCartForm');
+if (addToCartForm) {
+    addToCartForm.addEventListener('submit', function(e) {
+        e.preventDefault();
 
-// Thumbnail Click
+        if (!selectedSize || !selectedColor) {
+            alert('Vui lòng chọn size và màu sắc');
+            return false;
+        }
+
+        if (!selectedVariant || selectedVariant.stock <= 0) {
+            alert('Sản phẩm này hiện đã hết hàng');
+            return false;
+        }
+
+        const quantity = parseInt(qtyDisplayInput.value) || 1;
+        if (quantity > selectedVariant.stock) {
+            alert(`Chỉ còn ${selectedVariant.stock} sản phẩm trong kho`);
+            return false;
+        }
+
+        console.log('✅ Submitting cart with variant:', selectedVariant.id_product_variant);
+        this.submit();
+    });
+}
+
+// ===== Validation MUA NGAY =====
+const buyNowForm = document.getElementById('buyNowForm');
+if (buyNowForm) {
+    buyNowForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        if (!selectedSize || !selectedColor) {
+            alert('Vui lòng chọn size và màu sắc');
+            return false;
+        }
+
+        if (!selectedVariant || selectedVariant.stock <= 0) {
+            alert('Sản phẩm này hiện đã hết hàng');
+            return false;
+        }
+
+        const quantity = parseInt(buyNowQtyInput.value) || 1;
+        if (quantity > selectedVariant.stock) {
+            alert(`Chỉ còn ${selectedVariant.stock} sản phẩm trong kho`);
+            return false;
+        }
+
+        console.log('✅ Buying now with variant:', selectedVariant.id_product_variant);
+        this.submit();
+    });
+}
+
+// ===== Thumbnail & Accordion =====
 document.querySelectorAll('.thumbnail-item').forEach(thumb => {
     thumb.addEventListener('click', function() {
-        const imgSrc = this.querySelector('img').src;
-        document.getElementById('mainImage').src = imgSrc;
-        
+        const mainImg = document.getElementById('mainImage');
+        if (mainImg) {
+            mainImg.src = this.querySelector('img').src;
+        }
         document.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
         this.classList.add('active');
     });
 });
 
-// Accordion toggle
 function toggleAccordion(element) {
     const item = element.parentElement;
-    const icon = element.querySelector('.accordion-icon');
-    
     item.classList.toggle('active');
-    icon.textContent = item.classList.contains('active') ? '−' : '+';
+    const icon = element.querySelector('.accordion-icon');
+    if (icon) {
+        icon.textContent = item.classList.contains('active') ? '−' : '+';
+    }
 }
+
+// ===== KHỞI TẠO KHI LOAD TRANG =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Reset tất cả selections
+    document.querySelectorAll('.size-option').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.color-option').forEach(el => el.classList.remove('active'));
+    
+    // Reset variables
+    selectedSize = null;
+    selectedColor = null;
+    selectedVariant = null;
+    
+    // Reset form inputs
+    if (variantInput) variantInput.value = '';
+    if (variantInputBuyNow) variantInputBuyNow.value = '';
+    if (qtyDisplayInput) qtyDisplayInput.value = '1';
+    if (qtyHiddenInputCart) qtyHiddenInputCart.value = '1';
+    if (buyNowQtyInput) buyNowQtyInput.value = '1';
+    
+    // Update UI
+    updateStockDisplay();
+    
+    console.log('✅ Trang đã load - Vui lòng chọn màu và size');
+    console.log('📦 Có', variants.length, 'variants:', variants);
+});
 </script>
 @endpush
 @endsection

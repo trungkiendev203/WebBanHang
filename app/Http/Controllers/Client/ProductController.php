@@ -21,7 +21,7 @@ public function show($slug)
             $q->orderBy('id_image', 'ASC'); // ✅ ĐÚNG – ẢNH UPLOAD ĐẦU TIÊN
         }])
         ->firstOrFail();
-
+        $sold = $product->orderDetails()->sum('quantity');
     $variants = ProductVariant::where('id_product', $product->id_product)->get();
 
     $colors = $variants->pluck('color')->unique()->values();
@@ -44,6 +44,7 @@ public function show($slug)
         'sizes',
         'suggestProducts',
         'colors',
+        'sold',
         'mainImage'
     ));
 }

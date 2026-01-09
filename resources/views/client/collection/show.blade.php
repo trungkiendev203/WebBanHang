@@ -175,10 +175,7 @@
 
                             {{-- Price --}}
                             <div class="product-price">
-                                <span class="price-current">{{ number_format($product->price_product) }}đ</span>
-                                @if(isset($product->original_price) && $product->original_price > $product->price_product)
-                                    <span class="price-original">{{ number_format($product->original_price) }}đ</span>
-                                @endif
+                                <span class="price-current">{{ number_format($product->saleprice_product) }}đ</span>
                             </div>
 
                             @if(isset($product->savings))
@@ -191,9 +188,6 @@
                                     <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
                                 </svg>
                                 Đã bán {{ $product->total_sold ?? 0 }}
-
-
-
                             </div>
                         </div>
                     </div>
@@ -280,7 +274,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        backdrop-filter: blur(2px);
+  
     }
 
     .hero-gradient {

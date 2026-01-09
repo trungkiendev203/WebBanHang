@@ -35,14 +35,30 @@
 <section class="search-filter-bar">
     <div class="container">
         <div class="search-filter-wrapper">
-            <div class="search-box-enhanced">
-                <i class="bi bi-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Tìm kiếm sản phẩm...">
-                <button class="search-btn">
-                    <span>Tìm kiếm</span>
-                    <i class="bi bi-arrow-right"></i>
-                </button>
-            </div>
+<div class="search-box-enhanced">
+    <i class="bi bi-search search-icon"></i>
+
+    <form method="GET" class="search-form d-flex align-items-center w-100">
+        {{-- Giữ lại toàn bộ filter hiện có (trừ keyword & page) --}}
+        @foreach(request()->except('keyword', 'page') as $key => $value)
+            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+        @endforeach
+
+        <input
+            type="text"
+            name="keyword"
+            value="{{ request('keyword') }}"
+            class="search-input"
+            placeholder="Tìm kiếm sản phẩm..."
+        >
+
+        <button type="submit" class="search-btn">
+            <span>Tìm kiếm</span>
+            <i class="bi bi-arrow-right"></i>
+        </button>
+    </form>
+</div>
+
             <div class="quick-filters">
                 <button class="filter-chip active">
                     <i class="bi bi-star"></i>
@@ -108,26 +124,26 @@
     <div class="filter-section-content">
 
         {{-- Đầm --}}
-        <label class="filter-checkbox" onclick="window.location='{{ route('client.category', 'dam-cong-so') }}'">
+        <label class="filter-checkbox" onclick="window.location='{{ route('client.category', 'dam') }}'">
             <input type="checkbox" name="product-line"
-                {{ $category->slug_category == 'dam-cong-so' ? 'checked' : '' }}>
+                {{ $category->slug_category == 'dam' ? 'checked' : '' }}>
             <span class="checkmark"></span>
             <span class="label-text">Đầm</span>
-           <span class="count">({{ $counts['dam-cong-so'] }})</span>
+           <span class="count">({{ $counts['dam'] }})</span>
 
         </label>
 
         {{-- Áo --}}
     <label class="filter-checkbox" onclick="window.location='{{ route('client.category', 'ao') }}'">
     <input type="checkbox" name="product-line"
-        {{ $category->slug_category == 'ao' || $category->slug_category == 'ao-khoac-cong-so' ? 'checked' : '' }}>
+        {{ $category->slug_category == 'ao' || $category->slug_category == 'ao-khoac' ? 'checked' : '' }}>
     <span class="checkmark"></span>
     <span class="label-text">Áo</span>
 
     {{-- Gộp số lượng 2 danh mục --}}
     <span class="count">({{ 
         ($counts['ao'] ?? 0) + 
-        ($counts['ao-khoac-cong-so'] ?? 0) 
+        ($counts['ao-khoac'] ?? 0) 
     }})</span>
 </label>
 
@@ -154,27 +170,33 @@
 </div>
 
                     {{-- Giá --}}
-                    <div class="filter-section">
-                        <div class="filter-section-header" data-toggle="collapse">
-                            <h6>Khoảng giá</h6>
-                            <i class="bi bi-chevron-down"></i>
-                        </div>
-                        <div class="filter-section-content">
-                            <div class="price-range-slider">
-                                <input type="range" class="range-input" min="0" max="5000000" value="2500000" step="100000">
-                                <div class="price-range-values">
-                                    <span class="min-price">0đ</span>
-                                    <span class="max-price">5,000,000đ</span>
-                                </div>
-                            </div>
-                            <div class="price-presets">
-                                <button class="price-preset">Dưới 500k</button>
-                                <button class="price-preset">500k - 1tr</button>
-                                <button class="price-preset">1tr - 2tr</button>
-                                <button class="price-preset">Trên 2tr</button>
-                            </div>
-                        </div>
-                    </div>
+<div class="filter-section">
+    <div class="filter-section-header">
+        <h6>Khoảng giá</h6>
+    </div>
+
+    <div class="filter-section-content">
+<div class="price-range-slider">
+    <input
+        type="range"
+        class="range-input"
+        min="0"
+        max="5000000"
+        step="100000"
+        value="{{ request('price', 5000000) }}"
+    >
+
+    <div class="price-range-values">
+        <span>0đ</span>
+        <span class="max-price">
+            {{ number_format(request('price', 5000000)) }}đ
+        </span>
+    </div>
+</div>
+
+    </div>
+</div>
+
                     {{-- Banner Promotion --}}
                     <div class="sidebar-promo">
                         <div class="promo-content">
@@ -189,142 +211,14 @@
 
                 </div>
             </div>
-            {{-- Products Grid --}}
-            <div class="col-lg-9">
-                {{-- Products Header - Enhanced --}}
-                <div class="products-header-enhanced">
-                    <div class="products-info">
-                        <h4>{{ $products->total() }} sản phẩm</h4>
-                        <p>Hiển thị <strong>{{ $products->firstItem() }} - {{ $products->lastItem() }}</strong> trong tổng số <strong>{{ $products->total() }}</strong></p>
-                    </div>
-                    <div class="products-controls">
-                        <div class="view-toggle">
-                            <button class="view-btn active" data-view="grid">
-                                <i class="bi bi-grid-3x3-gap"></i>
-                            </button>
-                            <button class="view-btn" data-view="list">
-                                <i class="bi bi-list-ul"></i>
-                            </button>
-                        </div>
-                        <select class="sort-select">
-                            <option>Mới nhất</option>
-                            <option>Bán chạy</option>
-                            <option>Giá thấp → cao</option>
-                            <option>Giá cao → thấp</option>
-                            <option>Tên A → Z</option>
-                        </select>
-                    </div>
-                </div>
-                {{-- Products Grid --}}
-                <div class="products-grid-enhanced">
-                    <div class="row g-4">
-                        @foreach($products as $p)
-                        <div class="col-6 col-md-4 col-lg-4">
-                            <div class="product-card-enhanced">
-                                
-                                {{-- Image --}}
-                                <div class="product-image-container">
-                                    <a href="{{ route('client.product.detail', $p->slug_product) }}" class="product-link">
-                                        @if(Str::startsWith($p->image, 'http'))
-                                            <img src="{{ $p->image }}" alt="{{ $p->name_product }}" class="product-img">
-                                        @else
-                                            <img src="{{ asset('uploads/product/' . $p->image) }}" alt="{{ $p->name_product }}" class="product-img">
-                                        @endif
-                                    </a>
-                                    {{-- Badges --}}
-                                    <div class="product-badges-enhanced">
-                                        @if($p->saleprice_product)
-                                        <span class="badge-sale">
-                                            <i class="bi bi-lightning-fill"></i>
-                                            -{{ round((($p->price_product - $p->saleprice_product) / $p->price_product) * 100) }}%
-                                        </span>
-                                        @endif
-                                        @if(rand(0, 1))
-                                        <span class="badge-new">New</span>
-                                        @endif
-                                    </div>
-                                    {{-- Quick Actions --}}
-                                    <div class="product-actions-enhanced">
-                                        <button class="action-btn" title="Yêu thích">
-                                            <i class="bi bi-heart"></i>
-                                        </button>
-                                        <button class="action-btn" title="Thêm vào giỏ">
-                                            <i class="bi bi-bag-plus"></i>
-                                        </button>
-                                        <button class="action-btn" title="Xem nhanh">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </div>
-                                    {{-- Quick Add to Cart --}}
-                                    <div class="quick-add-cart">
-                                        <button class="btn-quick-add">
-                                            <i class="bi bi-cart-plus"></i>
-                                            <span>Thêm vào giỏ</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                {{-- Info --}}
-                                <div class="product-info-enhanced">
-                                    
-                                    {{-- Rating --}}
-                                    <div class="product-rating">
-                                        <div class="stars">
-                                            @for($i = 1; $i <= 5; $i++)
-                                            <i class="bi bi-star-fill"></i>
-                                            @endfor
-                                        </div>
-                                        <span class="rating-count">({{ rand(10, 200) }})</span>
-                                    </div>
 
-                                    {{-- Name --}}
-                                    <h6 class="product-name-enhanced">
-                                        <a href="{{ route('client.product.detail', $p->slug_product) }}">
-                                            {{ $p->name_product }}
-                                        </a>
-                                    </h6>
-                                    {{-- Colors --}}
-                                    @if(isset($p->colors) && count($p->colors) > 0)
-                                    <div class="product-colors-enhanced">
-                                        <span class="colors-label">Màu sắc:</span>
-                                        @foreach($p->colors as $color)
-                                        <span class="color-dot-enhanced" style="background: {{ $color }};"></span>
-                                        @endforeach
-                                    </div>
-                                    @endif
-                                    {{-- Price --}}
-                                    <div class="product-price-enhanced">
-                                        @if($p->saleprice_product)
-                                            <div class="price-group">
-                                                <span class="price-current-enhanced">{{ number_format($p->saleprice_product) }}đ</span>
-                                                <span class="price-old-enhanced">{{ number_format($p->price_product) }}đ</span>
-                                            </div>
-                                            <div class="savings">
-                                                Tiết kiệm {{ number_format($p->price_product - $p->saleprice_product) }}đ
-                                            </div>
-                                        @else
-                                            <span class="price-current-enhanced">{{ number_format($p->price_product) }}đ</span>
-                                        @endif
-                                    </div>
+<div class="col-lg-9">
+    <div id="product-list">
+        @include('client.category._products', ['products' => $products])
+    </div>
+</div>
 
-                                    {{-- Sales --}}
-                                    <div class="product-sales">
-                                        <i class="bi bi-bag-check"></i>
-                                        <span>Đã bán {{ rand(50, 500) }}</span>
-                                    </div>
-                                </div>
 
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- Pagination - Enhanced --}}
-                <div class="pagination-wrapper-enhanced">
-                    {{ $products->links() }}
-                </div>
-
-            </div>
 
         </div>
     </div>
@@ -959,6 +853,10 @@
     padding: 4px;
     gap: 4px;
 }
+.product-image-wrapper {
+    width: 100%;
+    height: 100%;
+}
 
 .view-btn {
     width: 40px;
@@ -1536,6 +1434,35 @@
 
 @push('js')
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const slider = document.querySelector('.range-input');
+    if (!slider) return;
+
+    let timer = null;
+
+    slider.addEventListener('input', function () {
+        clearTimeout(timer);
+
+        timer = setTimeout(() => {
+            const price = this.value;
+
+            const url = new URL(window.location.href);
+            url.searchParams.set('price', price);
+
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('product-list').innerHTML = html;
+                window.history.pushState({}, '', url);
+            });
+        }, 300);
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     
     // Toggle filter sections

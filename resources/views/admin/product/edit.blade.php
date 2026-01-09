@@ -670,6 +670,25 @@
                     <i class="fas fa-boxes"></i>
                     Biến thể sản phẩm
                 </div>
+                {{-- TẠO NHANH BIẾN THỂ --}}
+<div class="form-group-custom animate__animated animate__fadeInUp">
+    <div class="d-flex gap-2 flex-wrap">
+        <input type="text" id="quick-sizes" class="input-custom w-25"
+               placeholder="Size (VD: S,M,L,XL)">
+
+        <input type="text" id="quick-colors" class="input-custom w-25"
+               placeholder="Màu (VD: Đen,Trắng)">
+
+        <input type="number" id="quick-stock" class="input-custom w-25"
+               placeholder="Tồn kho mỗi biến thể">
+
+        <button type="button" class="btn btn-primary"
+                onclick="generateVariantsQuick()">
+            ⚡ Tạo nhanh
+        </button>
+    </div>
+</div>
+
 
                 <div id="variant-wrapper" class="d-flex flex-column gap-2">
                     {{-- Biến thể cũ --}}
@@ -708,6 +727,7 @@
 </div>
 
 <script>
+      let variantIndex = {{ count($product->variants) }};
 document.addEventListener('DOMContentLoaded', function () {
     
     // ========== QUẢN LÝ HÌNH ẢNH ==========
@@ -748,6 +768,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
                 reader.readAsDataURL(file);
             });
+            updateFileInput();
         });
     }
 
@@ -786,7 +807,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ========== QUẢN LÝ BIẾN THỂ ==========
-    let variantIndex = {{ count($product->variants) }};
+  
     const addVariantBtn = document.getElementById('add-variant');
     const variantWrapper = document.getElementById('variant-wrapper');
     const deletedVariantsInput = document.getElementById('deleted-variants-input');
@@ -826,6 +847,60 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+function generateVariantsQuick() {
+    const sizeInput  = document.getElementById('quick-sizes').value;
+    const colorInput = document.getElementById('quick-colors').value;
+    const stock      = document.getElementById('quick-stock').value || 0;
+
+    if (!sizeInput || !colorInput) {
+        alert('Vui lòng nhập size và màu');
+        return;
+    }
+
+    const sizes  = sizeInput.split(',').map(s => s.trim());
+    const colors = colorInput.split(',').map(c => c.trim());
+
+    const wrapper = document.getElementById('variant-wrapper');
+
+    sizes.forEach(size => {
+        colors.forEach(color => {
+
+            // 🚫 Tránh tạo trùng size + màu
+            const exists = [...wrapper.querySelectorAll('.variant-row')].some(row => {
+                const s = row.querySelector('input[name$="[size]"]')?.value;
+                const c = row.querySelector('input[name$="[color]"]')?.value;
+                return s === size && c === color;
+            });
+
+            if (exists) return;
+
+            const html = `
+                <div class="d-flex gap-2 mt-2 variant-row">
+                    <input type="text"
+                        name="variants[${variantIndex}][size]"
+                        class="form-control input-custom"
+                        value="${size}" required>
+
+                    <input type="text"
+                        name="variants[${variantIndex}][color]"
+                        class="form-control input-custom"
+                        value="${color}" required>
+
+                    <input type="number"
+                        name="variants[${variantIndex}][stock]"
+                        class="form-control input-custom"
+                        value="${stock}" required>
+
+                    <button type="button"
+                        class="btn btn-danger remove-variant-new">X</button>
+                </div>
+            `;
+
+            wrapper.insertAdjacentHTML('beforeend', html);
+            variantIndex++;
+        });
+    });
+}
 </script>
 
 @endsection

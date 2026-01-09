@@ -14,6 +14,9 @@ class HomeController extends Controller
    
 public function index()
 {
+    $products = Product::with('images')
+    ->where('status_product', 1)
+    ->paginate(12);
     $categories = Category::where('status_category', 1)
         ->orderBy('id_category')
         ->get();
@@ -28,6 +31,13 @@ public function index()
     $new_products = Product::orderBy('id_product', 'DESC')
         ->take(10)
         ->get();
+    $event = DB::table('tb_event')
+    ->where('status', 1)
+    ->where('position', 'header')
+    ->where('start_date', '<=', now())
+    ->where('end_date', '>=', now())
+    ->orderByDesc('id_event')
+    ->first();
 
     foreach ($new_products as $product) {
         $product->total_sold = DB::table('tb_order_detail')
@@ -49,6 +59,8 @@ public function index()
         'categories',
         'banners',
         'collections',
+        'event',
+        'products',
         'new_products',
         'best_sellers'
     ));

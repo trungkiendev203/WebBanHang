@@ -67,6 +67,7 @@ public function checkout(Request $request)
         }
 
         $order = Order::create([
+            'id_customer'  => Auth::guard('customer')->id() ?? null,
             'name_customer' => $request->name_customer,
             'phone_customer'=> $request->phone_customer,
             'email_customer'=> $request->email_customer,
@@ -98,6 +99,25 @@ public function checkout(Request $request)
         DB::rollBack();
         return back()->with('error','Có lỗi xảy ra');
     }
+}
+public function myOrders()
+{
+    $orders = Order::where('id_customer', Auth::guard('customer')->id())
+        ->orderByDesc('order_date')
+        ->get();
+
+    return view('client.order.my_orders', compact('orders'));
+}
+
+public function myOrderDetail($id)
+{
+    $order = Order::where('id_order', $id)
+        ->where('id_customer', Auth::guard('customer')->id())
+        ->firstOrFail();
+
+    $orderDetails = OrderDetail::where('id_order', $order->id_order)->get();
+
+    return view('client.order.my_order_detail', compact('order', 'orderDetails'));
 }
 
 }

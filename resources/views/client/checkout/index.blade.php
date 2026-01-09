@@ -3,6 +3,10 @@
 @section('title', 'Thanh toán')
 
 @section('content')
+@php
+    $user = Auth::guard('customer')->user();
+@endphp
+
 <style>
     .checkout-wrapper {
         background: #f5f5f5;
@@ -441,10 +445,14 @@
             <div class="checkout-form">
                 <h2 class="section-title">Thông tin giao hàng</h2>
                 
-                <div class="login-prompt">
-                    Bạn đã có tài khoản?
-                    <a href="#">Đăng nhập</a> ngay để nhận ưu đãi
-                </div>
+@if(!Auth::guard('customer')->check())
+<div class="login-prompt">
+    Bạn đã có tài khoản?
+    <a href="{{ route('client.login') }}">Đăng nhập</a> ngay để nhận ưu đãi
+</div>
+@endif
+
+
                 
                 <form action="{{ route('client.checkout.store') }}" method="POST">
 
@@ -461,26 +469,35 @@
 
                     <div class="form-group">
                         <label class="form-label">Tên</label>
-                        <input type="text" name="name_customer" class="form-input" 
-                               placeholder="Họ và tên" required>
+<input type="text" name="name_customer" class="form-input"
+       value="{{ old('name_customer', $user->name ?? '') }}"
+       placeholder="Họ và tên" required>
+
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Điện thoại</label>
-                        <input type="tel" name="phone_customer" class="form-input" 
-                               placeholder="Số điện thoại" required>
+<input type="tel" name="phone_customer" class="form-input"
+       value="{{ old('phone_customer', $user->phone ?? '') }}"
+       placeholder="Số điện thoại" required>
+
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Địa chỉ Email</label>
-                        <input type="email" name="email_customer" class="form-input" 
-                               placeholder="Địa chỉ Email">
+<input type="email" name="email_customer" class="form-input"
+       value="{{ old('email_customer', $user->email ?? '') }}"
+       placeholder="Địa chỉ Email">
+
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Địa chỉ</label>
-                        <input type="text" name="address_detail" class="form-input" 
-                               placeholder="Địa chỉ" required>
+<input type="text" name="address_detail" class="form-input"
+       value="{{ old('address_detail', $address->address_detail ?? '') }}"
+       placeholder="Địa chỉ" required>
+
+
                     </div>
                     
                     <div class="form-row">
@@ -512,14 +529,26 @@
                     <div class="payment-section">
                         <h2 class="section-title">Phương thức thanh toán</h2>
                         
-                        <label class="payment-method">
-                            <input type="radio" name="payment_method" value="COD" checked>
-                            <div class="payment-icon">💵</div>
-                            <div class="payment-details">
-                                <h4>Thanh toán khi nhận hàng (COD)</h4>
-                                <p>Miễn phí vận chuyển cho mọi đơn hàng trên 500.000đ</p>
-                            </div>
-                        </label>
+<label class="payment-method">
+    <input type="radio" name="payment_method" value="COD"
+           {{ old('payment_method','COD')=='COD'?'checked':'' }}>
+    <div class="payment-icon">💵</div>
+    <div class="payment-details">
+        <h4>Thanh toán khi nhận hàng (COD)</h4>
+        <p>Miễn phí vận chuyển cho mọi đơn hàng trên 500.000đ</p>
+    </div>
+</label>
+
+<label class="payment-method">
+    <input type="radio" name="payment_method" value="MOMO"
+           {{ old('payment_method')=='MOMO'?'checked':'' }}>
+    <div class="payment-icon">📱</div>
+    <div class="payment-details">
+        <h4>Thanh toán qua MoMo</h4>
+        <p>Thanh toán nhanh chóng và an toàn qua ví điện tử MoMo</p>
+    </div>
+</label>
+
                         
                         <p class="payment-note">
                             Nếu bạn không hài lòng về sản phẩm của chúng tôi. Bạn hoàn toàn có thể trả lại sản phẩm. 
@@ -573,27 +602,62 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+function normalizeName(name) {
+    if (!name) return '';
+    return name
+        .toLowerCase()
+        .replace('thành phố ', '')
+        .replace('tỉnh ', '')
+        .replace('quận ', '')
+        .replace('huyện ', '')
+        .replace('thị xã ', '')
+        .replace('phường ', '')
+        .replace('xã ', '')
+        .trim();
+}
+
+
+
+
+const userProvince = @json($address->province ?? '');
+const userDistrict = @json($address->district ?? '');
+const userWard     = @json($address->ward ?? '');
+
 
     const provinceSelect = document.getElementById('province');
     const districtSelect = document.getElementById('district');
     const wardSelect = document.getElementById('ward');
+    console.log('userProvince:', userProvince);
+console.log('normalized:', normalizeName(userProvince));
 
     // 1️⃣ Load Tỉnh/TP
     fetch('https://provinces.open-api.vn/api/p/')
         .then(res => res.json())
         .then(data => {
             data.forEach(province => {
+                const selected =
+    normalizeName(province.name) === normalizeName(userProvince)
+        ? 'selected'
+        : '';
+
                 provinceSelect.innerHTML += `
-                    <option value="${province.name}" data-code="${province.code}">
+                    <option value="${province.name}" data-code="${province.code}" ${selected}>
                         ${province.name}
                     </option>
                 `;
             });
+
+if (userProvince) {
+    setTimeout(() => {
+        provinceSelect.dispatchEvent(new Event('change'));
+    }, 0);
+}
+
         });
 
     // 2️⃣ Khi chọn Tỉnh → load Quận/Huyện
     provinceSelect.addEventListener('change', function () {
-        const provinceCode = this.selectedOptions[0].dataset.code;
+        const provinceCode = this.selectedOptions[0]?.dataset.code;
 
         districtSelect.innerHTML = '<option value="">Quận/Huyện</option>';
         wardSelect.innerHTML = '<option value="">Phường/Xã</option>';
@@ -604,18 +668,30 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 data.districts.forEach(district => {
+                    const selected =
+    normalizeName(district.name) === normalizeName(userDistrict)
+        ? 'selected'
+        : '';
+
                     districtSelect.innerHTML += `
-                        <option value="${district.name}" data-code="${district.code}">
+                        <option value="${district.name}" data-code="${district.code}" ${selected}>
                             ${district.name}
                         </option>
                     `;
                 });
+
+if (userDistrict) {
+    setTimeout(() => {
+        districtSelect.dispatchEvent(new Event('change'));
+    }, 0);
+}
+
             });
     });
 
     // 3️⃣ Khi chọn Quận → load Phường/Xã
     districtSelect.addEventListener('change', function () {
-        const districtCode = this.selectedOptions[0].dataset.code;
+        const districtCode = this.selectedOptions[0]?.dataset.code;
 
         wardSelect.innerHTML = '<option value="">Phường/Xã</option>';
 
@@ -625,8 +701,13 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 data.wards.forEach(ward => {
+                    const selected =
+    normalizeName(ward.name) === normalizeName(userWard)
+        ? 'selected'
+        : '';
+
                     wardSelect.innerHTML += `
-                        <option value="${ward.name}">
+                        <option value="${ward.name}" ${selected}>
                             ${ward.name}
                         </option>
                     `;
@@ -636,6 +717,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 </script>
+
 @endpush
 
 @endsection

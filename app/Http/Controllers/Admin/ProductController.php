@@ -257,8 +257,10 @@ class ProductController extends Controller
     // 📌 CLIENT DETAIL
     // ================================
     public function detail($slug)
-    {
+    {   
+        
         $product = Product::where('slug_product', $slug)->firstOrFail();
+        $sold = $product->orderDetails()->sum('quantity');
 
         // ✅ DÙNG STOCK
         $sizes = $product->variants
